@@ -1,7 +1,17 @@
 module.exports = {
   login: (req, res, next) => {
-    let phone = req.query.account || req.body.account,
-      password = req.query.password || req.body.password;
+    let phone = req.query.account || req.body.account || "",
+      password = req.query.password || req.body.password || "";
+
+    if (phone == "" || password == "") {
+      res.send(
+        JSON.stringify({
+          code: 3,
+          desc: "invalid input"
+        })
+      );
+      return;
+    }
 
     req.getConnection(function(err, conn) {
       if (err) return next(err);
@@ -33,6 +43,43 @@ module.exports = {
             })
           );
         }
+      });
+    });
+  },
+  fixPwd: (req, res, next) => {
+    let password = req.query.password || req.body.password || '';
+
+    if (password == "") {
+      res.send(
+        JSON.stringify({
+          code: 3,
+          desc: "invalid input"
+        })
+      );
+      return;
+    }
+
+    req.getConnection(function(err, conn) {
+      if (err) return next(err);
+
+      var sql = "UPDATE usr SET pwd = ? WHERE user = 'admin' ";
+
+      conn.query(sql, [password], function(err, rows) {
+        if (err) {
+          res.send(
+            JSON.stringify({
+              code: 1,
+              desc: "set pwd error"
+            })
+          );
+          return next("login error" + err);
+        } else
+          res.send(
+            JSON.stringify({
+              code: 0,
+              desc: "set pwd success"
+            })
+          );
       });
     });
   }

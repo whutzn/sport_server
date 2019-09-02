@@ -4,7 +4,7 @@ function getDbConfig() {
       port: 3306,
       user: 'gisdb',
       password: '1234Qwer',
-      database: 'gistest',
+      database: 'sportdb',
       multipleStatements: true
   }
 }
