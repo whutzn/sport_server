@@ -1,6 +1,6 @@
 let express = require("express"),
-  storeRoute = require("../controller/store"),
-  router = express.Router();
+    storeRoute = require("../controller/store"),
+    router = express.Router();
 
 router.post("/uploadfile", storeRoute.uploadstorefile);
 router.post("/add", storeRoute.addstore);
