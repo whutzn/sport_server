@@ -5,7 +5,7 @@ let express = require("express"),
     logger = require("morgan"),
     bodyParser = require("body-parser"),
     expressValidator = require("express-validator"),
-    connection = require("express-myconnection"),
+    connection = require('express-mysql-connection'),
     mysql = require("mysql"),
     cors = require("cors"),
     routes = require("./routes"),
@@ -26,7 +26,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ limit: "5gb", extended: false }));
 app.use(bodyParser.json({ limit: "5gb" }));
 app.use(expressValidator());
-app.use(connection(mysql, mysqlConfig.getDbConfig(), "request"));
+app.use(connection(mysql, mysqlConfig.getDbConfig(), "pool"));
 
 routes(app);
 

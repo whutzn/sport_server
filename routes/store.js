@@ -7,5 +7,6 @@ router.post("/add", storeRoute.addstore);
 router.post("/set", storeRoute.setstore);
 router.post("/remove", storeRoute.removestore);
 router.get("/list", storeRoute.getstorelist);
+router.post("/login", storeRoute.login);
 
 module.exports = router;
