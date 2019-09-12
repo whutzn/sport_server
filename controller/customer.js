@@ -68,7 +68,29 @@ let typeList = (req, res, next) => {
 
     let sql = "SELECT * FROM sourcetype ";
 
-    if(type != '') sql += "WHERE type = 1";
+    if(type != '') sql += "WHERE type = " + type;
+
+    conn.query(sql, [], function(err, rows) {
+      if (err) {
+        console.log("query error", err);
+        res.send({ code: 11, desc: err });
+        return;
+      }
+      res.send({ code: 0, desc: rows });
+    });
+  });
+};
+
+let addCustomer = (req, res, next) => {
+  let type = req.query.type ||　req.body.type || '';
+  req.getConnection(function(err, conn) {
+    if (err) {
+      console.log("error db link", err);
+      res.send({ code: 10, desc: err });
+      return;
+    }
+
+    let sql = "INSERT INTO customer (`name`,gender,birth,height,weight,wx,qq,phone,address,coord,hobby,profession,remarks,visitsource,performancesource,target,classid,memberid,coachid,storeid,pid ) VALUES ? ";
 
     conn.query(sql, [], function(err, rows) {
       if (err) {
@@ -83,5 +105,6 @@ let typeList = (req, res, next) => {
 
 module.exports = {
   uploadiconfile: uploadIconFile,
-  typelist: typeList
+  typelist: typeList,
+  addcustomer: addCustomer
 };

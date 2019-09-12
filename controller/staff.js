@@ -158,6 +158,7 @@ let removeStaff = (req, res, next) => {
 let listStaff = (req, res, next) => {
   let id = req.query.id || req.body.id || "",
     key = req.body.key || req.query.key || "",
+    type = req.body.type || req.query.type || "",
     pageSize = req.body.pageSize || req.query.pageSize || "",
     pageNum = req.body.pageNum || req.query.pageNum || "";
 
@@ -174,6 +175,16 @@ let listStaff = (req, res, next) => {
     if (id != "") {
       sql += "WHERE storeid = " + id;
       sql0 += "WHERE storeid = " + id;
+    }
+
+    if(type != "") {
+      if(sql.indexOf("WHERE") >= 0) {
+        sql += " AND type = '" + type + "'";
+        sql0 += " AND type = '" + type + "'";
+      }else {
+        sql += "WHERE type = '" + type + "'";
+        sql0 += "WHERE type = '" + type + "'";
+      }
     }
 
     if (pageNum != "" && pageSize != "") {
