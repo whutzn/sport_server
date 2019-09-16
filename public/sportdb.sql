@@ -11,11 +11,91 @@
  Target Server Version : 80011
  File Encoding         : 65001
 
- Date: 04/09/2019 15:34:02
+ Date: 16/09/2019 16:39:44
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for customer
+-- ----------------------------
+DROP TABLE IF EXISTS `customer`;
+CREATE TABLE `customer`  (
+  `id` int(100) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `gender` int(1) NULL DEFAULT NULL,
+  `birth` date NULL DEFAULT NULL,
+  `height` float(5, 1) NULL DEFAULT NULL,
+  `weight` float(5, 1) NULL DEFAULT NULL,
+  `wx` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `qq` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `coord` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `hobby` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `profession` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `visitsource` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `performancesource` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `target` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `classid` int(10) NULL DEFAULT NULL,
+  `memberid` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `coachid` int(10) NULL DEFAULT NULL,
+  `saleid` int(5) NULL DEFAULT NULL,
+  `pid` int(10) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of customer
+-- ----------------------------
+INSERT INTO `customer` VALUES (1, '张二', 1, '2000-01-01', 175.5, 120.1, '1233445566', '123456677', '13212341234', '湖北省武汉市武昌区', '114.33,30.45556', '篮球', '工程师', '备注', '会员朋友', '老会员', '减脂', 1, '000001', 5, 2, 2);
+INSERT INTO `customer` VALUES (2, '张三', 2, '2000-01-01', 175.5, 120.1, '1233445566', '123456677', '13312341234', '湖北省武汉市武昌区', '114.33,30.45556', '篮球', '工程师', '备注', '会员朋友', '老会员', '减脂', 1, '000001', 5, 2, 3);
+INSERT INTO `customer` VALUES (3, '张三', 2, '2000-01-01', 175.5, 120.1, '1233445566', '123456677', '13312341234', '湖北省武汉市武昌区', '114.33,30.45556', '篮球', '工程师', '备注', '会员朋友', '老会员', '减脂', 1, '000001', 5, 2, 1);
+INSERT INTO `customer` VALUES (4, '李一', 1, '2000-01-01', 175.5, 120.1, '1233445566', '123456677', '13312341234', '湖北省武汉市武昌区', '114.33,30.45556', '篮球', '工程师', '备注', '会员朋友', '老会员', '减脂', 1, '000001', 5, 2, 1);
+INSERT INTO `customer` VALUES (5, '张飞', 1, '2000-01-01', 177.0, 170.0, '张飞', '12345', '13012341234', '武汉市武昌区', '114.409855,30.98754', '唱跳rap', '歌手', '无', '网络', '转介绍', '塑形', 1, '000005', 1, 2, 6);
+
+-- ----------------------------
+-- Table structure for iconfiles
+-- ----------------------------
+DROP TABLE IF EXISTS `iconfiles`;
+CREATE TABLE `iconfiles`  (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `filename` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `encoding` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `mimetype` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `size` int(50) NULL DEFAULT NULL,
+  `filepath` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `addTime` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for sourcetype
+-- ----------------------------
+DROP TABLE IF EXISTS `sourcetype`;
+CREATE TABLE `sourcetype`  (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `type` int(5) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sourcetype
+-- ----------------------------
+INSERT INTO `sourcetype` VALUES (1, '会员朋友', 1);
+INSERT INTO `sourcetype` VALUES (2, '网络', 1);
+INSERT INTO `sourcetype` VALUES (3, '附近', 1);
+INSERT INTO `sourcetype` VALUES (4, '老会员', 1);
+INSERT INTO `sourcetype` VALUES (5, '单页', 1);
+INSERT INTO `sourcetype` VALUES (6, '自发', 1);
+INSERT INTO `sourcetype` VALUES (7, '转介绍', 2);
+INSERT INTO `sourcetype` VALUES (8, '续卡', 2);
+INSERT INTO `sourcetype` VALUES (9, '老会员', 2);
+INSERT INTO `sourcetype` VALUES (10, '访客', 2);
+INSERT INTO `sourcetype` VALUES (11, '约访', 2);
 
 -- ----------------------------
 -- Table structure for staff

@@ -4,5 +4,6 @@ let express = require("express"),
 
 router.post("/uploadicon", customerRoute.uploadiconfile);
 router.post("/typelist", customerRoute.typelist);
+router.post("/add", customerRoute.addcustomer);
 
 module.exports = router;
