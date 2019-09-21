@@ -88,7 +88,7 @@ let addCustomer = (req, res, next) => {
    coord = req.query.coord || req.body.coord || '', hobby = req.query.hobby || req.body.hobby || '', profession = req.query.profession || req.body.profession || '',
    remarks = req.query.remarks || req.body.remarks || '', visitsource = req.query.visitsource || req.body.visitsource || '', performancesource = req.query.performancesource || req.body.performancesource || '',
    target = req.query.target || req.body.target || '', classid = req.query.classid || req.body.classid || '', memberid = req.query.memberid || req.body.memberid || '',
-   coachid = req.query.coachid || req.body.coachid || '', saleid = req.query.storeid || req.body.saleid || '', pid = req.query.pid || req.body.pid || '';
+   coachid = req.query.coachid || req.body.coachid || '', saleid = req.query.saleid || req.body.saleid || '', pid = req.query.pid || req.body.pid || '';
 
   req.getConnection(function(err, conn) {
     if (err) {
