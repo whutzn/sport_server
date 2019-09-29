@@ -12,6 +12,7 @@ module.exports = app => {
   app.use("/admin/staff",require("./staff"));
   app.use("/admin/customer",require("./customer"));
   app.use("/admin/setting",require("./setting"));
+  app.use("/admin/class", require("./class"));
 
   app.use(function(req, res, next) {
     next(createError(404));
