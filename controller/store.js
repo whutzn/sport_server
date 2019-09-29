@@ -1,5 +1,6 @@
 let multer = require("multer"),
   fs = require("fs"),
+  axios = require("axios"),
   storage = multer.diskStorage({
     destination: function(req, file, cb) {
       cb(null, "./public/store");
@@ -74,9 +75,21 @@ function addStore(req, res, next) {
           desc: "add store fail"
         });
       } else {
-        res.send({
-          code: 0,
-          desc: rows.insertId
+        axios.post("http://localhost:3000/admin/setting/add",{
+          storeid: rows.insertId,
+          general: 0,
+          vip: 0,
+          deadline: 0
+        }).then((respose) => {
+          res.send({
+            code: 0,
+            desc: rows.insertId
+          });
+        }).catch((err) => {
+          res.send({
+            code: 1,
+            desc: "add store setting fail: "+ err
+          });
         });
       }
     });
@@ -132,9 +145,18 @@ function removeStore(req, res, next) {
               });
               return next("query error" + err);
             } else {
-              res.send({
-                code: 0,
-                desc: "remove success"
+              axios.post("http://localhost:3000/admin/setting/add",{
+                storeid: id
+              }).then((respose) => {
+                res.send({
+                  code: 0,
+                  desc: "remove success"
+                });
+              }).catch((err) => {
+                res.send({
+                  code: 1,
+                  desc: "remove store error "+ err
+                });
               });
             }
           });
@@ -160,7 +182,7 @@ function getStoreList(req, res, next) {
       } else {
         rows.forEach(element => {
           element.filename =
-            "http://localhost:3000/store/" + element.filename;
+            "http://121.41.28.144:3000/store/" + element.filename;
         });
         res.send({
           code: 0,
