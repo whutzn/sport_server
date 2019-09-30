@@ -3,7 +3,7 @@ let multer = require("multer"),
   axios = require("axios"),
   storage = multer.diskStorage({
     destination: function(req, file, cb) {
-      cb(null, "./public/store");
+      cb(null, "./public/class");
     },
     filename: function(req, file, cb) {
       let str = file.originalname.split(".");
@@ -50,7 +50,7 @@ function uploadClassFile(req, res, next) {
         } else {
           res.send({
             code: 0,
-            desc: rows.insertId
+            desc: req.file.filename
           });
         }
       });
@@ -154,11 +154,13 @@ function getList(req, res, next) {
       } else {
         rows.forEach(element => {
           let pnames = element.pnames.split(','),
+          pcontents = element.content.split('$'),
           files = [];
           pnames.forEach(element1 => {
             let file = "http://121.41.28.144:3000/class/" + element1;
             files.push(file);
           });
+          element.contents = pcontents;
           element.files = files;
         });
         res.send({
