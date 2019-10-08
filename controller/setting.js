@@ -3,14 +3,15 @@ module.exports = {
     let general = req.query.general || req.body.general,
       vip = req.query.vip || req.body.vip,
       deadline = req.query.deadline || req.body.deadline,
+      renew = req.query.renew || req.body.renew,
       storeid = req.query.storeid || req.body.storeid;
 
     req.getConnection(function(err, conn) {
       if (err) return next(err);
       let sql =
-        "INSERT INTO setting(general,vip,deadline,storeid) VALUES (?,?,?,?);";
+        "INSERT INTO setting(general,vip,deadline,renew,storeid) VALUES (?,?,?,?,?);";
 
-      conn.query(sql, [general, vip, deadline, storeid], function(err, rows) {
+      conn.query(sql, [general, vip, deadline, renew, storeid], function(err, rows) {
         if (err) {
           console.error("query error", err);
           res.send({
@@ -30,14 +31,15 @@ module.exports = {
     let general = req.query.general || req.body.general,
       vip = req.query.vip || req.body.vip,
       deadline = req.query.deadline || req.body.deadline,
+      renew = req.query.renew || req.body.renew,
       storeid = req.query.storeid || req.body.storeid;
 
     req.getConnection(function(err, conn) {
       if (err) return next(err);
       let sql =
-        "UPDATE setting SET general = ?, vip = ?, deadline = ? WHERE storeid = ?;";
+        "UPDATE setting SET general = ?, vip = ?, deadline = ?, renew = ? WHERE storeid = ?;";
 
-      conn.query(sql, [general, vip, deadline, storeid], function(err, rows) {
+      conn.query(sql, [general, vip, deadline, renew, storeid], function(err, rows) {
         if (err) {
           console.error("query error", err);
           res.send({

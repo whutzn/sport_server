@@ -79,7 +79,8 @@ function addStore(req, res, next) {
           storeid: rows.insertId,
           general: 0,
           vip: 0,
-          deadline: 0
+          deadline: 0,
+          renew: 0
         }).then((respose) => {
           res.send({
             code: 0,

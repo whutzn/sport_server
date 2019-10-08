@@ -93,6 +93,7 @@ let addCustomer = (req, res, next) => {
         address = req.query.address || req.body.address || '',
         coord = req.query.coord || req.body.coord || '',
         hobby = req.query.hobby || req.body.hobby || '',
+        nature = req.query.nature || req.body.nature || '',
         profession = req.query.profession || req.body.profession || '',
         remarks = req.query.remarks || req.body.remarks || '',
         pname = req.query.pname || req.body.pname || '',
@@ -102,8 +103,8 @@ let addCustomer = (req, res, next) => {
         target = req.query.target || req.body.target || '',
         classid = req.query.classid || req.body.classid || '',
         memberid = req.query.memberid || req.body.memberid || '',
-        coachid = req.query.coachid || req.body.coachid || '',
-        saleid = req.query.saleid || req.body.saleid || '',
+        coachid = req.query.coach || req.body.coach || '',
+        saleid = req.query.sale || req.body.sale || '',
         status = req.query.status || req.body.status || 0,
         storeid = req.query.storeid || req.body.storeid;
 
@@ -117,7 +118,7 @@ let addCustomer = (req, res, next) => {
 
         let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid],
 
-            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coachid,saleid,`status`,storeid,time) VALUES(?,?,?,?,?,?,?,?,?,NOW());";
+            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time) VALUES(?,?,?,?,?,?,?,?,?,NOW());";
 
         conn.beginTransaction(function(err) {
             if (err) { throw err; }
@@ -130,9 +131,9 @@ let addCustomer = (req, res, next) => {
                     });
                 }
 
-                var arr1 = [name, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, profession, remarks, pname, result.insertId],
+                let arr1 = [name, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
 
-                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, profession, remarks, pname, customerid ) VALUES(?)";
+                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, customerid ) VALUES(?)";
 
                 conn.query(sql1, [arr1], function(err, result) {
                     if (err) {
@@ -151,6 +152,82 @@ let addCustomer = (req, res, next) => {
                             });
                         }
                         res.send({ code: 0, desc: 'add customer success' });
+                    });
+                });
+            });
+        });
+    });
+};
+
+let setCustomer = (req, res, next) => {
+    let name = req.query.name || 　req.body.name || '',
+        gender = req.query.gender || 　req.body.gender || '',
+        birth = req.query.birth || req.body.birth || '',
+        height = req.query.height || req.body.height || '',
+        weight = req.query.weight || req.body.weight || '',
+        wx = req.query.wx || req.body.wx || '',
+        qq = req.query.qq || req.body.qq || '',
+        phone = req.query.phone || req.body.phone || '',
+        address = req.query.address || req.body.address || '',
+        hobby = req.query.hobby || req.body.hobby || '',
+        nature = req.query.nature || req.body.nature || '',
+        profession = req.query.profession || req.body.profession || '',
+        remarks = req.query.remarks || req.body.remarks || '',
+        pname = req.query.pname || req.body.pname || '',
+
+        visitsource = req.query.visitsource || req.body.visitsource || '',
+        performancesource = req.query.performancesource || req.body.performancesource || '',
+        target = req.query.target || req.body.target || '',
+        classid = req.query.classid || req.body.classid || '',
+        memberid = req.query.memberid || req.body.memberid || '',
+        coachid = req.query.coach || req.body.coach || '',
+        saleid = req.query.sale || req.body.sale || '',
+        status = req.query.status || req.body.status || 0,
+        storeid = req.query.storeid || req.body.storeid,
+
+        time = req.query.time || req.body.time,
+        customerid = req.query.customerid || req.body.customerid;
+
+
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let sql2 = "UPDATE customer SET visitsource = ?, performancesource = ?, target = ?, classid = ?, memberid = ?, coach = ?, sale = ?, `status` = ?, time = ?, storeid = ? WHERE id = ?";
+
+        conn.beginTransaction(function(err) {
+            if (err) { throw err; }
+            conn.query(sql2, [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, time, storeid, customerid], function(err, result) {
+                if (err) {
+                    conn.rollback(function() {
+                        console.log("query error", err);
+                        res.send({ code: 11, desc: err });
+                        return;
+                    });
+                }
+
+                let sql1 = "UPDATE customer_base SET `name` = ?, gender = ?, birth = ?, height = ?, weight = ?, wx = ?, qq = ?, phone = ?, address = ?, hobby = ?, nature = ?, profession = ?, remarks = ?, pname = ? WHERE customerid = ?";
+
+                conn.query(sql1, [name, gender, birth, height, weight, wx, qq, phone, address, hobby, nature, profession, remarks, pname, customerid], function(err, result) {
+                    if (err) {
+                        conn.rollback(function() {
+                            console.log("query error", err);
+                            res.send({ code: 11, desc: err });
+                            return;
+                        });
+                    }
+                    conn.commit(function(err) {
+                        if (err) {
+                            conn.rollback(function() {
+                                console.log("query error", err);
+                                res.send({ code: 11, desc: err });
+                                return;
+                            });
+                        }
+                        res.send({ code: 0, desc: 'set customer success' });
                     });
                 });
             });
@@ -212,10 +289,12 @@ let remove = (req, res, next) => {
 let addClass = (req, res, next) => {
     let customerid = req.query.customerid || req.body.customerid || 0,
         coachid = req.query.coachid || req.body.coachid || 0,
+        coachname = req.query.coachname || req.body.coachname || '',
         date = req.query.date || req.body.date,
         time = req.query.time || req.body.time,
         remarks = req.query.remarks || req.body.remarks || '',
         saleid = req.query.saleid || req.body.saleid || '',
+        salename = req.query.salename || req.body.salename || '',
         storeid = req.query.storeid || req.body.storeid || 0;
     req.getConnection(function(err, conn) {
         if (err) {
@@ -224,15 +303,46 @@ let addClass = (req, res, next) => {
             return;
         }
 
-        let sql = "INSERT INTO classorder(customerid,coachid,date,time,remarks,saleid,storeid) VALUES(?,?,?,?,?,?,?);";
+        let sql = "INSERT INTO classorder(customerid,coachid,date,time,remarks,saleid,storeid,coachname,salename) VALUES(?,?,?,?,?,?,?,?,?);";
 
-        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid], function(err, rows) {
+        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename], function(err, rows) {
             if (err) {
                 console.log("query error", err);
                 res.send({ code: 11, desc: err });
                 return;
             }
             res.send({ code: 0, desc: 'add classorder success' });
+        });
+    });
+};
+
+let setClass = (req, res, next) => {
+    let customerid = req.query.customerid || req.body.customerid || 0,
+        coachid = req.query.coachid || req.body.coachid || 0,
+        coachname = req.query.coachname || req.body.coachname || '',
+        date = req.query.date || req.body.date,
+        time = req.query.time || req.body.time,
+        remarks = req.query.remarks || req.body.remarks || '',
+        saleid = req.query.saleid || req.body.saleid || '',
+        salename = req.query.salename || req.body.salename || '',
+        storeid = req.query.storeid || req.body.storeid || 0,
+        id = req.query.id || req.body.id;
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let sql = "UPDATE classorder set customerid = ?,coachid = ?,date = ?,time = ?,remarks = ?,saleid = ?,storeid = ?,coachname = ?,salename = ?  WHERE id = ?;";
+
+        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename, id], function(err, rows) {
+            if (err) {
+                console.log("query error", err);
+                res.send({ code: 11, desc: err });
+                return;
+            }
+            res.send({ code: 0, desc: 'set classorder success' });
         });
     });
 };
@@ -259,12 +369,40 @@ let removeClass = (req, res, next) => {
     });
 };
 
+let classList = (req, res, next) => {
+    let storeid = req.query.storeid || req.body.storeid || 0,
+    coachid = req.query.coachid || req.body.coachid || 0;
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let sql = "SELECT * FROM classorder WHERE storeid = " + storeid;
+
+        if(coachid != 0) sql += " AND coachid = " + coachid;
+
+        conn.query(sql, [], function(err, rows) {
+            if (err) {
+                console.log("query error", err);
+                res.send({ code: 11, desc: err });
+                return;
+            }
+            res.send({ code: 0, desc: rows });
+        });
+    });
+};
+
 module.exports = {
     uploadiconfile: uploadIconFile,
     typelist: typeList,
     addcustomer: addCustomer,
     listcustomer: customerList,
     removecustomer: remove,
+    setcustomer: setCustomer,
     addclass: addClass,
-    removeclass: removeClass
+    removeclass: removeClass,
+    setclass: setClass,
+    listclass: classList
 };
