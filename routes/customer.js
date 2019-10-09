@@ -19,5 +19,9 @@ router.post("/addweight", customerIndex.addWeight);
 router.post("/getweight", customerIndex.getWeight);
 router.post("/addindex", customerIndex.addIndex);
 router.post("/getindex", customerIndex.getIndex);
+router.post("/uploadimage", customerRoute.addcustomerfile);
+router.post("/getimage", customerIndex.getImage);
+router.post("/addresult", customerIndex.addResult);
+router.post("/getresult", customerIndex.getResult);
 
 module.exports = router;

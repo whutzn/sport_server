@@ -14,13 +14,13 @@ let multer = require("multer"),
 let uploadIconFile = (req, res, next) => {
     upload.single("file")(req, res, function(err) {
         if (err instanceof multer.MulterError) {
-            console.log("upload store file1", err);
+            console.log("upload icon file1", err);
             res.send({
                 code: 1,
                 desc: err
             });
         } else if (err) {
-            console.log("upload store file2", err);
+            console.log("upload icon file2", err);
             res.send({
                 code: 1,
                 desc: err
@@ -38,6 +38,53 @@ let uploadIconFile = (req, res, next) => {
             if (err) return next(err);
             let addSQL =
                 "INSERT INTO iconfiles(filename, encoding, mimetype, size, filepath, addTime) VALUES ( ? )";
+
+            conn.query(addSQL, [metadata], function(err, rows) {
+                if (err) {
+                    console.error("query error" + err);
+                    res.send({
+                        code: 1,
+                        desc: "database error"
+                    });
+                } else {
+                    res.send({
+                        code: 0,
+                        desc: req.file.filename
+                    });
+                }
+            });
+        });
+    });
+}
+
+let uploadCustomerFile = (req, res, next) => {
+    upload.single("file")(req, res, function(err) {
+        if (err instanceof multer.MulterError) {
+            console.log("upload customer file1", err);
+            res.send({
+                code: 1,
+                desc: err
+            });
+        } else if (err) {
+            console.log("upload customer file2", err);
+            res.send({
+                code: 1,
+                desc: err
+            });
+        }
+        let metadata = [
+            req.file.filename,
+            req.file.encoding,
+            req.file.mimetype,
+            req.file.size,
+            req.file.path,
+            new Date(),
+            req.query.customerid
+        ];
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+            let addSQL =
+                "INSERT INTO customer_file(filename, encoding, mimetype, size, filepath, addTime, customerid) VALUES ( ? )";
 
             conn.query(addSQL, [metadata], function(err, rows) {
                 if (err) {
@@ -376,7 +423,7 @@ let removeClass = (req, res, next) => {
 
 let classList = (req, res, next) => {
     let storeid = req.query.storeid || req.body.storeid || 0,
-    coachid = req.query.coachid || req.body.coachid || 0;
+        coachid = req.query.coachid || req.body.coachid || 0;
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -386,7 +433,7 @@ let classList = (req, res, next) => {
 
         let sql = "SELECT * FROM classorder WHERE storeid = " + storeid;
 
-        if(coachid != 0) sql += " AND coachid = " + coachid;
+        if (coachid != 0) sql += " AND coachid = " + coachid;
 
         conn.query(sql, [], function(err, rows) {
             if (err) {
@@ -409,5 +456,6 @@ module.exports = {
     addclass: addClass,
     removeclass: removeClass,
     setclass: setClass,
-    listclass: classList
+    listclass: classList,
+    addcustomerfile: uploadCustomerFile
 };
