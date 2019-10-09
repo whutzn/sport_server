@@ -1,5 +1,6 @@
 let express = require("express"),
     customerRoute = require("../controller/customer"),
+    customerIndex = require("../controller/customerIndex"),
     router = express.Router();
 
 router.post("/uploadicon", customerRoute.uploadiconfile);
@@ -13,5 +14,10 @@ router.post("/addclass", customerRoute.addclass);
 router.post("/removeclass", customerRoute.removeclass);
 router.post("/setclass", customerRoute.setclass);
 router.post("/listclass", customerRoute.listclass);
+
+router.post("/addweight", customerIndex.addWeight);
+router.post("/getweight", customerIndex.getWeight);
+router.post("/addindex", customerIndex.addIndex);
+router.post("/getindex", customerIndex.getIndex);
 
 module.exports = router;
