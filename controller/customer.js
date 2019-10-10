@@ -130,10 +130,11 @@ let typeList = (req, res, next) => {
 
 let addCustomer = (req, res, next) => {
     let name = req.query.name || 　req.body.name || '',
-        gender = req.query.gender || 　req.body.gender || '',
+        gender = req.query.gender || 　req.body.gender || 1,
         birth = req.query.birth || req.body.birth || '',
-        height = req.query.height || req.body.height || '',
-        weight = req.query.weight || req.body.weight || '',
+        age = req.query.age || req.body.age || 0,
+        height = req.query.height || req.body.height || 0,
+        weight = req.query.weight || req.body.weight || 0,
         wx = req.query.wx || req.body.wx || '',
         qq = req.query.qq || req.body.qq || '',
         phone = req.query.phone || req.body.phone || '',
@@ -153,8 +154,9 @@ let addCustomer = (req, res, next) => {
         coachid = req.query.coach || req.body.coach || '',
         saleid = req.query.sale || req.body.sale || '',
         status = req.query.status || req.body.status || 0,
-        storeid = req.query.storeid || req.body.storeid,
-        time = req.query.time || req.body.time || '',
+        storeid = req.query.storeid || req.body.storeid || 0,
+        time = req.query.time || req.body.time || null,
+        startTime = req.query.startTime || req.body.startTime || null,
         price = req.query.price || req.body.price || 0,
         classStatus = req.query.classStatus || req.body.classStatus || '';
 
@@ -166,9 +168,9 @@ let addCustomer = (req, res, next) => {
             return;
         }
 
-        let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid, time, price, classStatus],
+        let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid, time, startTime,price, classStatus],
 
-            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, price, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);";
+            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, startTime,price, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?);";
 
         conn.beginTransaction(function(err) {
             if (err) { throw err; }
@@ -181,9 +183,9 @@ let addCustomer = (req, res, next) => {
                     });
                 }
 
-                let arr1 = [name, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
+                let arr1 = [name, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
 
-                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, customerid ) VALUES(?)";
+                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, customerid ) VALUES(?)";
 
                 conn.query(sql1, [arr1], function(err, result) {
                     if (err) {

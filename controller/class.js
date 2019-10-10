@@ -98,7 +98,7 @@ function setClass(req, res, next) {
         if (err) return next(err);
         let sql = "UPDATE classinfo SET `name` = ?, content = ?, days = ?, pnames = ?, storeid = ?, price = ? WHERE id = ?;";
 
-        conn.query(sql, [name, content, days, pnames, storeid, id], function(err, rows) {
+        conn.query(sql, [name, content, days, pnames, storeid,price, id], function(err, rows) {
             if (err) {
                 console.error("query error", err);
                 res.send({
