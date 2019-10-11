@@ -292,7 +292,9 @@ let setCustomer = (req, res, next) => {
 };
 
 let customerList = (req, res, next) => {
-    let storeid = req.query.storeid || 　req.body.storeid || 0;
+    let storeid = req.query.storeid || 　req.body.storeid || 0,
+    pageSize = req.body.pageSize || req.query.pageSize || "",
+    pageNum = req.body.pageNum || req.query.pageNum || "";
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -303,6 +305,11 @@ let customerList = (req, res, next) => {
         let sql = "SELECT customer.*, customer_base.* FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid ";
 
         if (storeid != 0) sql += "WHERE customer.storeid = " + storeid;
+
+        if (pageNum != "" && pageSize != "") {
+            let start = (pageNum - 1) * pageSize;
+            sql += " LIMIT " + start + "," + pageSize;
+          }
 
         conn.query(sql, [], function(err, rows) {
             if (err) {
@@ -427,7 +434,9 @@ let removeClass = (req, res, next) => {
 
 let classList = (req, res, next) => {
     let storeid = req.query.storeid || req.body.storeid || 0,
-        coachid = req.query.coachid || req.body.coachid || 0;
+        coachid = req.query.coachid || req.body.coachid || 0,
+        pageSize = req.body.pageSize || req.query.pageSize || "",
+        pageNum = req.body.pageNum || req.query.pageNum || "";
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -438,6 +447,11 @@ let classList = (req, res, next) => {
         let sql = "SELECT * FROM classorder WHERE storeid = " + storeid;
 
         if (coachid != 0) sql += " AND coachid = " + coachid;
+
+        if (pageNum != "" && pageSize != "") {
+            let start = (pageNum - 1) * pageSize;
+            sql += " LIMIT " + start + "," + pageSize;
+          }
 
         conn.query(sql, [], function(err, rows) {
             if (err) {

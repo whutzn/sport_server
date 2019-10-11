@@ -139,12 +139,19 @@ function removeClass(req, res, next) {
 }
 
 function getList(req, res, next) {
-    let id = req.query.id || req.body.id || 0;
+    let id = req.query.id || req.body.id || 0,
+    pageSize = req.body.pageSize || req.query.pageSize || "",
+    pageNum = req.body.pageNum || req.query.pageNum || "";
     req.getConnection(function(err, conn) {
         if (err) return next(err);
         let sql = "SELECT * FROM classinfo ";
 
         if (id != 0) sql += "WHERE storeid = " + id;
+
+        if (pageNum != "" && pageSize != "") {
+            let start = (pageNum - 1) * pageSize;
+            sql += " LIMIT " + start + "," + pageSize;
+          }
 
         conn.query(sql, [id], function(err, rows) {
             if (err) {
