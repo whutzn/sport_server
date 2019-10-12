@@ -294,7 +294,13 @@ let setCustomer = (req, res, next) => {
 let customerList = (req, res, next) => {
     let storeid = req.query.storeid || 　req.body.storeid || 0,
     pageSize = req.body.pageSize || req.query.pageSize || "",
-    pageNum = req.body.pageNum || req.query.pageNum || "";
+    pageNum = req.body.pageNum || req.query.pageNum || "",
+    sale = req.body.sale || req.query.sale || "",
+    coach = req.query.coach || req.body.coach || "",
+    classStatus = req.query.classStatus || req.body.classStatus || '',
+    status = req.query.status || req.body.status || "",
+    name = req.query.name || 　req.body.name || '';
+
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -306,10 +312,20 @@ let customerList = (req, res, next) => {
 
         if (storeid != 0) sql += "WHERE customer.storeid = " + storeid;
 
+        searchFiled(sql, sale);
+        sql = searchFiled(sql, coach);
+        searchFiled(sql, classStatus);
+        searchFiled(sql, status);
+        searchFiled(sql, name);
+
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
             sql += " LIMIT " + start + "," + pageSize;
           }
+
+          sql += ";SELECT FOUND_ROWS() AS total;";
+
+          console.log(sql);
 
         conn.query(sql, [], function(err, rows) {
             if (err) {
@@ -317,7 +333,7 @@ let customerList = (req, res, next) => {
                 res.send({ code: 11, desc: err });
                 return;
             }
-            rows.forEach(element => {
+            rows[0].forEach(element => {
                 element.gender = element.gender == 1 ? '男' : '女';
                 element.pname = "http://121.41.28.144:3000/customer/" + element.pname;
             });
@@ -453,6 +469,8 @@ let classList = (req, res, next) => {
             sql += " LIMIT " + start + "," + pageSize;
           }
 
+        sql += ";SELECT FOUND_ROWS() AS total;";
+
         conn.query(sql, [], function(err, rows) {
             if (err) {
                 console.log("query error", err);
@@ -462,6 +480,23 @@ let classList = (req, res, next) => {
             res.send({ code: 0, desc: rows });
         });
     });
+};
+
+function searchFiled(sql, filed){
+    if(filed != "") {
+        console.log(sql, filed);
+        if(sql.indexOf("WHERE") >= 0) {
+            console.log(1);
+          sql += " AND coach = '" + filed + "'";
+          console.log(2,sql);
+        }else {
+            console.log(3)
+          sql += "WHERE " + filed +" = '" + filed + "'";
+          console.log(4)
+        }
+    }
+
+    return sql;
 };
 
 module.exports = {

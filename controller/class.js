@@ -153,7 +153,9 @@ function getList(req, res, next) {
             sql += " LIMIT " + start + "," + pageSize;
           }
 
-        conn.query(sql, [id], function(err, rows) {
+        sql += ";SELECT FOUND_ROWS() AS total;";
+
+        conn.query(sql, [], function(err, rows) {
             if (err) {
                 console.error("query error", err);
                 res.send({
@@ -161,7 +163,7 @@ function getList(req, res, next) {
                     desc: "get class list fail"
                 });
             } else {
-                rows.forEach(element => {
+                rows[0].forEach(element => {
                     let pnames = element.pnames.split(','),
                         pcontents = element.content.split('$'),
                         files = [];
