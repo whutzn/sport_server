@@ -153,7 +153,7 @@ let addCustomer = (req, res, next) => {
         memberid = req.query.memberid || req.body.memberid || '',
         coachid = req.query.coach || req.body.coach || '',
         saleid = req.query.sale || req.body.sale || '',
-        status = req.query.status || req.body.status || 0,
+        status = req.query.status || req.body.status || '',
         storeid = req.query.storeid || req.body.storeid || 0,
         time = req.query.time || req.body.time || null,
         startTime = req.query.startTime || req.body.startTime || null,
@@ -211,6 +211,62 @@ let addCustomer = (req, res, next) => {
     });
 };
 
+let setCustomerStatus = (req, res, next) => {
+    let price = req.query.price || req.body.price || 0,
+        classid = req.query.classid || req.body.classid || '',
+        customerid = req.query.customerid || req.body.customerid,
+        endTime = req.query.endTime || req.body.endTime || null,
+        storeid = req.query.storeid || req.body.storeid || 0,
+        level = '普通会员';
+
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let sql2 = "SELECT * FROM setting WHERE storeid = ?";
+
+        conn.beginTransaction(function(err) {
+            if (err) { throw err; }
+            conn.query(sql2, [storeid], function(err, result1) {
+                if (err) {
+                    conn.rollback(function() {
+                        console.log("query error", err);
+                        res.send({ code: 11, desc: err });
+                        return;
+                    });
+                }
+
+                let sql1 = "UPDATE customer SET `status` = ?,classStatus = ?, classid = ?,level = ?, endTime = ? WHERE id = ?";
+                if (price > result1[0].vip) level = "vip会员";
+
+                conn.query(sql1, ['在线会员', '已续费', classid, level, endTime, customerid], function(err, result) {
+                    if (err) {
+                        conn.rollback(function() {
+                            console.log("query error", err);
+                            res.send({ code: 11, desc: err });
+                            return;
+                        });
+                    }
+                    conn.commit(function(err) {
+                        if (err) {
+                            conn.rollback(function() {
+                                console.log("query error", err);
+                                res.send({ code: 11, desc: err });
+                                return;
+                            });
+                        }
+                        res.send({ code: 0, desc: 'set customer status success' });
+                    });
+                });
+            });
+        });
+    });
+
+};
+
 let setCustomer = (req, res, next) => {
     let name = req.query.name || 　req.body.name || '',
         gender = req.query.gender || 　req.body.gender || '',
@@ -235,7 +291,7 @@ let setCustomer = (req, res, next) => {
         memberid = req.query.memberid || req.body.memberid || '',
         coachid = req.query.coach || req.body.coach || '',
         saleid = req.query.sale || req.body.sale || '',
-        status = req.query.status || req.body.status || 0,
+        status = req.query.status || req.body.status || '',
         storeid = req.query.storeid || req.body.storeid,
 
         time = req.query.time || req.body.time,
@@ -293,13 +349,15 @@ let setCustomer = (req, res, next) => {
 
 let customerList = (req, res, next) => {
     let storeid = req.query.storeid || 　req.body.storeid || 0,
-    pageSize = req.body.pageSize || req.query.pageSize || "",
-    pageNum = req.body.pageNum || req.query.pageNum || "",
-    sale = req.body.sale || req.query.sale || "",
-    coach = req.query.coach || req.body.coach || "",
-    classStatus = req.query.classStatus || req.body.classStatus || '',
-    status = req.query.status || req.body.status || "",
-    name = req.query.name || 　req.body.name || '';
+        pageSize = req.body.pageSize || req.query.pageSize || "",
+        pageNum = req.body.pageNum || req.query.pageNum || "",
+        sale = req.body.sale || req.query.sale || "",
+        coach = req.query.coach || req.body.coach || "",
+        level = req.query.level || req.body.level || "",
+        classStatus = req.query.classStatus || req.body.classStatus || '',
+        status = req.query.status || req.body.status || "",
+        name = req.query.name || 　req.body.name || '',
+        customerid = req.query.customerid || req.body.customerid || '';
 
     req.getConnection(function(err, conn) {
         if (err) {
@@ -308,24 +366,24 @@ let customerList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT customer.*, customer_base.* FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid ";
+        let sql = "SELECT SQL_CALC_FOUND_ROWS customer.*, customer_base.* FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid ";
 
         if (storeid != 0) sql += "WHERE customer.storeid = " + storeid;
 
-        searchFiled(sql, sale);
-        sql = searchFiled(sql, coach);
-        searchFiled(sql, classStatus);
-        searchFiled(sql, status);
-        searchFiled(sql, name);
+        sql = searchFiled(sql, sale, 'sale');
+        sql = searchFiled(sql, coach, 'coach');
+        sql = searchFiled(sql, classStatus, 'classStatus');
+        sql = searchFiled(sql, status, 'status');
+        sql = searchFiled(sql, name, 'name');
+        sql = searchFiled(sql, level, 'level');
+        sql = searchFiled(sql, customerid, 'customerid');
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
             sql += " LIMIT " + start + "," + pageSize;
-          }
+        }
 
-          sql += ";SELECT FOUND_ROWS() AS total;";
-
-          console.log(sql);
+        sql += ";SELECT FOUND_ROWS() AS total;";
 
         conn.query(sql, [], function(err, rows) {
             if (err) {
@@ -374,7 +432,8 @@ let addClass = (req, res, next) => {
         remarks = req.query.remarks || req.body.remarks || '',
         saleid = req.query.saleid || req.body.saleid || '',
         salename = req.query.salename || req.body.salename || '',
-        storeid = req.query.storeid || req.body.storeid || 0;
+        storeid = req.query.storeid || req.body.storeid || 0,
+        classid = req.query.classid || req.body.classid || 0;
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -382,9 +441,9 @@ let addClass = (req, res, next) => {
             return;
         }
 
-        let sql = "INSERT INTO classorder(customerid,coachid,date,time,remarks,saleid,storeid,coachname,salename) VALUES(?,?,?,?,?,?,?,?,?);";
+        let sql = "INSERT INTO classorder(customerid,coachid,date,time,remarks,saleid,storeid,coachname,salename,classid) VALUES(?,?,?,?,?,?,?,?,?,?);";
 
-        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename], function(err, rows) {
+        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename, classid], function(err, rows) {
             if (err) {
                 console.log("query error", err);
                 res.send({ code: 11, desc: err });
@@ -451,6 +510,7 @@ let removeClass = (req, res, next) => {
 let classList = (req, res, next) => {
     let storeid = req.query.storeid || req.body.storeid || 0,
         coachid = req.query.coachid || req.body.coachid || 0,
+        customerid = req.query.customerid || req.body.customerid || 0,
         pageSize = req.body.pageSize || req.query.pageSize || "",
         pageNum = req.body.pageNum || req.query.pageNum || "";
     req.getConnection(function(err, conn) {
@@ -460,14 +520,15 @@ let classList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT * FROM classorder WHERE storeid = " + storeid;
+        let sql = "SELECT SQL_CALC_FOUND_ROWS * FROM classorder WHERE storeid = " + storeid;
 
         if (coachid != 0) sql += " AND coachid = " + coachid;
+        if (customerid != 0) sql += " AND customerid = " + customerid;
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
             sql += " LIMIT " + start + "," + pageSize;
-          }
+        }
 
         sql += ";SELECT FOUND_ROWS() AS total;";
 
@@ -482,17 +543,12 @@ let classList = (req, res, next) => {
     });
 };
 
-function searchFiled(sql, filed){
-    if(filed != "") {
-        console.log(sql, filed);
-        if(sql.indexOf("WHERE") >= 0) {
-            console.log(1);
-          sql += " AND coach = '" + filed + "'";
-          console.log(2,sql);
-        }else {
-            console.log(3)
-          sql += "WHERE " + filed +" = '" + filed + "'";
-          console.log(4)
+function searchFiled(sql, filed, name) {
+    if (filed != "") {
+        if (sql.indexOf("WHERE") >= 0) {
+            sql += " AND " + name + "= '" + filed + "'";
+        } else {
+            sql += "WHERE " + name + " = '" + filed + "'";
         }
     }
 
@@ -510,5 +566,6 @@ module.exports = {
     removeclass: removeClass,
     setclass: setClass,
     listclass: classList,
-    addcustomerfile: uploadCustomerFile
+    addcustomerfile: uploadCustomerFile,
+    setstatus: setCustomerStatus
 };

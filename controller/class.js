@@ -98,7 +98,7 @@ function setClass(req, res, next) {
         if (err) return next(err);
         let sql = "UPDATE classinfo SET `name` = ?, content = ?, days = ?, pnames = ?, storeid = ?, price = ? WHERE id = ?;";
 
-        conn.query(sql, [name, content, days, pnames, storeid,price, id], function(err, rows) {
+        conn.query(sql, [name, content, days, pnames, storeid, price, id], function(err, rows) {
             if (err) {
                 console.error("query error", err);
                 res.send({
@@ -140,18 +140,18 @@ function removeClass(req, res, next) {
 
 function getList(req, res, next) {
     let id = req.query.id || req.body.id || 0,
-    pageSize = req.body.pageSize || req.query.pageSize || "",
-    pageNum = req.body.pageNum || req.query.pageNum || "";
+        pageSize = req.body.pageSize || req.query.pageSize || "",
+        pageNum = req.body.pageNum || req.query.pageNum || "";
     req.getConnection(function(err, conn) {
         if (err) return next(err);
-        let sql = "SELECT * FROM classinfo ";
+        let sql = "SELECT SQL_CALC_FOUND_ROWS * FROM classinfo ";
 
         if (id != 0) sql += "WHERE storeid = " + id;
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
             sql += " LIMIT " + start + "," + pageSize;
-          }
+        }
 
         sql += ";SELECT FOUND_ROWS() AS total;";
 

@@ -9,6 +9,7 @@ router.post("/add", customerRoute.addcustomer);
 router.post("/set", customerRoute.setcustomer);
 router.post("/list", customerRoute.listcustomer);
 router.post("/remove", customerRoute.removecustomer);
+router.post("/setstatus", customerRoute.setstatus);
 
 router.post("/addclass", customerRoute.addclass);
 router.post("/removeclass", customerRoute.removeclass);
