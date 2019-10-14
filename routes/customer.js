@@ -15,6 +15,7 @@ router.post("/addclass", customerRoute.addclass);
 router.post("/removeclass", customerRoute.removeclass);
 router.post("/setclass", customerRoute.setclass);
 router.post("/listclass", customerRoute.listclass);
+router.post("/signclass", customerIndex.signClass);
 
 router.post("/addweight", customerIndex.addWeight);
 router.post("/getweight", customerIndex.getWeight);
@@ -24,5 +25,7 @@ router.post("/uploadimage", customerRoute.addcustomerfile);
 router.post("/getimage", customerIndex.getImage);
 router.post("/addresult", customerIndex.addResult);
 router.post("/getresult", customerIndex.getResult);
+
+router.post("/getclassbycustomerid", customerIndex.getClassByCustomerid);
 
 module.exports = router;

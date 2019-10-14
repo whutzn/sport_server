@@ -433,7 +433,7 @@ let addClass = (req, res, next) => {
         saleid = req.query.saleid || req.body.saleid || '',
         salename = req.query.salename || req.body.salename || '',
         storeid = req.query.storeid || req.body.storeid || 0,
-        classid = req.query.classid || req.body.classid || 0;
+        classid = req.query.classid || req.body.classid || '';
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -464,7 +464,8 @@ let setClass = (req, res, next) => {
         saleid = req.query.saleid || req.body.saleid || '',
         salename = req.query.salename || req.body.salename || '',
         storeid = req.query.storeid || req.body.storeid || 0,
-        id = req.query.id || req.body.id;
+        classid = req.query.classid || req.body.classid || '';
+    id = req.query.id || req.body.id;
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -472,9 +473,9 @@ let setClass = (req, res, next) => {
             return;
         }
 
-        let sql = "UPDATE classorder set customerid = ?,coachid = ?,date = ?,time = ?,remarks = ?,saleid = ?,storeid = ?,coachname = ?,salename = ?  WHERE id = ?;";
+        let sql = "UPDATE classorder set customerid = ?,coachid = ?,date = ?,time = ?,remarks = ?,saleid = ?,storeid = ?,coachname = ?,salename = ?,classid = ? WHERE id = ?;";
 
-        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename, id], function(err, rows) {
+        conn.query(sql, [customerid, coachid, date, time, remarks, saleid, storeid, coachname, salename, classid, id], function(err, rows) {
             if (err) {
                 console.log("query error", err);
                 res.send({ code: 11, desc: err });
@@ -520,10 +521,10 @@ let classList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT SQL_CALC_FOUND_ROWS * FROM classorder WHERE storeid = " + storeid;
+        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = 1 AND storeid = " + storeid;
 
-        if (coachid != 0) sql += " AND coachid = " + coachid;
-        if (customerid != 0) sql += " AND customerid = " + customerid;
+        if (coachid != 0) sql += " AND classorder.coachid = " + coachid;
+        if (customerid != 0) sql += " AND classorder.customerid = " + customerid;
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;

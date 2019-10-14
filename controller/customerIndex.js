@@ -176,5 +176,78 @@ module.exports = {
                 );
             });
         });
+    },
+    signClass: (req, res, next) => {
+        let id = req.query.id || req.body.id || 0;
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+            conn.beginTransaction(function(err) {
+                if (err) { throw err; }
+                let sql2 = "SELECT classorder.customerid, classorder.classid AS class1, customer.classid AS class2 FROM classorder LEFT JOIN customer ON customer.id = classorder.customerid WHERE classorder.id = ?";
+
+                conn.query(sql2, [id], function(err, result1) {
+                    if (err) {
+                        conn.rollback(function() {
+                            console.log("query error", err);
+                            res.send({ code: 11, desc: err });
+                            return;
+                        });
+                    }
+
+                    let curClass = JSON.parse(result1[0].class1),
+                        classList = JSON.parse(result1[0].class2);
+
+                    for (let index = 0; index < classList.length; index++) {
+                        if (classList[index].id == curClass.id) {
+                            classList[index].last--;
+                            break;
+                        }
+                    }
+
+                    let sql1 = "UPDATE classorder SET `status` = 0 WHERE id = " + id;
+                    sql1 += ";UPDATE customer SET classid = '" + JSON.stringify(classList) + "' WHERE id = " + result1[0].customerid;
+
+                    conn.query(sql1, [], function(err, result) {
+                        if (err) {
+                            conn.rollback(function() {
+                                console.log("query error", err);
+                                res.send({ code: 11, desc: err });
+                                return;
+                            });
+                        }
+                        conn.commit(function(err) {
+                            if (err) {
+                                conn.rollback(function() {
+                                    console.log("query error", err);
+                                    res.send({ code: 11, desc: err });
+                                    return;
+                                });
+                            }
+                            res.send({ code: 0, desc: 'sign class order success' });
+                        });
+                    });
+                });
+            });
+        });
+    },
+    getClassByCustomerid: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0;
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "SELECT classid AS classList FROM customer WHERE id = ?";
+
+
+            conn.query(sql, [customerid], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: rows[0]
+                    })
+                );
+            });
+        });
     }
 };
