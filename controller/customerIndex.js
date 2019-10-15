@@ -249,5 +249,24 @@ module.exports = {
                 );
             });
         });
+    },
+    stopClass: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0;
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "UPDATE customer SET classStatus = '已停课', `status` = '停课会员' WHERE id = ?";
+
+
+            conn.query(sql, [customerid], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: 'stop class success'
+                    })
+                );
+            });
+        });
     }
 };
