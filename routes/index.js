@@ -1,4 +1,5 @@
-let createError = require("http-errors");
+let createError = require("http-errors"),
+    schedule = require("node-schedule");
 
 module.exports = app => {
   // catch 404 and forward to error handler
@@ -27,5 +28,9 @@ module.exports = app => {
     // render the error page
     res.status(err.status || 500);
     res.send({ code: 1, desc: "not found" });
+  });
+
+  schedule.scheduleJob('30 * * * * *',()=>{
+    console.log('taskTime:' + new Date());
   });
 };
