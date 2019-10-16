@@ -268,5 +268,26 @@ module.exports = {
                 );
             });
         });
-    }
+    },
+    buyCard: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0,
+            endTime = req.query.endTime || req.body.endTime || null,
+            price = req.query.price || req.body.endTime || 0;
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "UPDATE customer SET endTime = ?, price = ?, `status` = '在线会员' WHERE id = ?";
+
+
+            conn.query(sql, [endTime, price, customerid], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: 'buy card success'
+                    })
+                );
+            });
+        });
+    },
 };

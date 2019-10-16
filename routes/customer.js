@@ -17,6 +17,7 @@ router.post("/setclass", customerRoute.setclass);
 router.post("/listclass", customerRoute.listclass);
 router.post("/signclass", customerIndex.signClass);
 router.post("/stopclass", customerIndex.stopClass);
+router.post("/buycard", customerIndex.buyCard);
 
 router.post("/addweight", customerIndex.addWeight);
 router.post("/getweight", customerIndex.getWeight);
