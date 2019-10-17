@@ -30,7 +30,7 @@ module.exports = app => {
     res.send({ code: 1, desc: "not found" });
   });
 
-  schedule.scheduleJob('30 * * * * *',()=>{
+  schedule.scheduleJob('30 * * * * *',() => {
     console.log('taskTime:' + new Date());
   });
 };
