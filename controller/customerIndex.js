@@ -292,4 +292,27 @@ module.exports = {
             });
         });
     },
+    getTask: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0,
+            name = req.query.name || req.body.name || '',
+            level = req.query.level || req.body.level || '',
+            phone = req.query.phone || req.body.phone || '',
+            saleid = req.query.saleid || req.body.saleid || 0;
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "INSERT INTO sale_task(customerid,`name`,`level`,saleid,phone,date) VALUES (?,?,?,?,?,NOW());";
+
+            conn.query(sql, [customerid, name, level, saleid, phone], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: 'buy card success'
+                    })
+                );
+            });
+        });
+    },
 };
