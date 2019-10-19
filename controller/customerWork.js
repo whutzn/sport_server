@@ -129,5 +129,44 @@ module.exports = {
         );
       });
     });
-  }
+  },
+  updateStatusAndTask: (req, res, next) => {
+
+    req.getConnection(function(err, conn) {
+        if (err) return next(err);
+
+        let sql0 = "UPDATE customer SET taskNum = CASE `level` WHEN 'vip会员' THEN MOD(DATEDIFF(NOW(),time),15) WHEN '普通会员' THEN MOD(DATEDIFF(NOW(),time),30) WHEN '到期会员' THEN MOD(DATEDIFF(NOW(),time),90) END WHERE `level` IN ('vip会员','普通会员','到期会员') AND time IS NOT NULL;"
+        conn.query(sql0, function(err0,rows0) {
+          if(err0) {
+            console.log('update task err: ', err0);
+            return next(err0);
+          }
+          let sql1 = "SELECT customer.id, customer_base.`name`, customer.`level`, customer.sale, customer_base.phone, customer.storeid FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.taskNum = 0;";
+          conn.query(sql1, function(err1, rows1){
+            if(err1) {
+              console.log('query task err: ', err1);
+              return next(err1);
+            }
+            let arr = [];
+            if(rows1.length == 0) {
+              console.log('no task today');
+              res.send({code:11,desc:'no task'});
+              return;
+            }else {
+              rows1.forEach(element => {
+                arr.push([element.id,element.name,element.level,element.sale,element.phone,element.storeid, new Date()]);
+              });
+              let sql = "INSERT INTO sale_task(customerid,`name`,`level`,sale,phone,storeid,date) VALUES ?";
+              conn.query(sql,[arr],function(err,rows){
+                if(err) {
+                  console.log('query task err: ', err);
+                  return next(err);
+                }
+                res.send({code:0,desc:'do task'});
+              });
+            }
+          });
+        });
+    });
+},
 };

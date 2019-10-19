@@ -1,8 +1,10 @@
 let express = require("express"),
-    customerRoute = require("../controller/customer"),
-    customerIndex = require("../controller/customerIndex"),
-    customerWork = require("../controller/customerWork"),
-    router = express.Router();
+  axios = require("axios"),
+  schedule = require("node-schedule"),
+  customerRoute = require("../controller/customer"),
+  customerIndex = require("../controller/customerIndex"),
+  customerWork = require("../controller/customerWork"),
+  router = express.Router();
 
 router.post("/uploadicon", customerRoute.uploadiconfile);
 router.post("/typelist", customerRoute.typelist);
@@ -36,4 +38,17 @@ router.post("/standard/remove", customerWork.remove);
 router.post("/standard/verify", customerWork.verify);
 router.post("/standard/list", customerWork.getList);
 
+router.post("/dotask", customerWork.updateStatusAndTask);
+
+schedule.scheduleJob("30 * * * * *", () => {
+  console.log("taskTime:" + new Date());
+  axios
+    .post("http://localhost:3000/admin/customer/dotask")
+    .then(respose => {
+      console.log('do task', respose.data);
+    })
+    .catch(err => {
+      console.log('task err', err);
+    });
+});
 module.exports = router;
