@@ -1,6 +1,7 @@
 let express = require("express"),
     customerRoute = require("../controller/customer"),
     customerIndex = require("../controller/customerIndex"),
+    customerWork = require("../controller/customerWork"),
     router = express.Router();
 
 router.post("/uploadicon", customerRoute.uploadiconfile);
@@ -29,5 +30,10 @@ router.post("/addresult", customerIndex.addResult);
 router.post("/getresult", customerIndex.getResult);
 
 router.post("/getclassbycustomerid", customerIndex.getClassByCustomerid);
+
+router.post("/standard/add", customerWork.add);
+router.post("/standard/remove", customerWork.remove);
+router.post("/standard/verify", customerWork.verify);
+router.post("/standard/list", customerWork.getList);
 
 module.exports = router;

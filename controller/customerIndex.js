@@ -292,7 +292,7 @@ module.exports = {
             });
         });
     },
-    getTask: (req, res, next) => {
+    setTask: (req, res, next) => {
         let customerid = req.query.customerid || req.body.customerid || 0,
             name = req.query.name || req.body.name || '',
             level = req.query.level || req.body.level || '',
@@ -309,7 +309,7 @@ module.exports = {
                 res.send(
                     JSON.stringify({
                         code: 0,
-                        desc: 'buy card success'
+                        desc: 'set task success'
                     })
                 );
             });
