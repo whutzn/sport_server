@@ -271,6 +271,7 @@ module.exports = {
     batchTask: (req, res, next) => {
         let id = req.query.id || req.body.id || '';
         coach = req.query.coach || req.body.coach || '',
+        sale = req.query.sale || req.body.sale || '',
             sql = "DELETE FROM customer WHERE id IN(";
 
         if (id == '') {
@@ -279,6 +280,9 @@ module.exports = {
         }
         if (coach == '') sql += id + ");";
         else sql = "UPDATE customer SET coach = '" + coach + "' WHERE id IN(" + id + ");";
+
+        if (sale == '') sql += id + ");";
+        else sql = "UPDATE customer SET sale = '" + sale + "' WHERE id IN(" + id + ");";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
