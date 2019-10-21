@@ -43,6 +43,9 @@ router.post("/tasklist", customerWork.taskList);
 router.post("/settask", customerWork.setTask);
 router.post("/removetask", customerWork.removeTask);
 
+router.post("/statistics", customerWork.getStatistics);
+router.post("/batchtask", customerWork.batchTask);
+
 schedule.scheduleJob("30 0 0 * * *", () => {
     console.log("taskTime:" + new Date());
     axios

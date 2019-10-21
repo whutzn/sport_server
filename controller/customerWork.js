@@ -245,4 +245,53 @@ module.exports = {
             });
         });
     },
+    getStatistics: (req, res, next) => {
+        let storeid = req.query.storeid || req.body.storeid || 0,
+            queryString = '';
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+            if (storeid != 0) queryString = 'WHERE storeid = ' + storeid;
+
+            let sql = `SELECT performancesource, COUNT(performancesource) AS count FROM customer ${queryString} GROUP BY performancesource;SELECT classStatus, COUNT(classStatus) AS count FROM customer ${queryString} GROUP BY classStatus;
+          SELECT sale, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY sale;SELECT count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString};
+          SELECT coach, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY coach;`;
+
+            conn.query(sql, [], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: rows
+                    })
+                );
+            });
+        });
+    },
+    batchTask: (req, res, next) => {
+        let id = req.query.id || req.body.id || '';
+        coach = req.query.coach || req.body.coach || '',
+            sql = "DELETE FROM customer WHERE id IN(";
+
+        if (id == '') {
+            res.send({ code: 1, desc: 'no id' });
+            return;
+        }
+        if (coach == '') sql += id + ");";
+        else sql = "UPDATE customer SET coach = '" + coach + "' WHERE id IN(" + id + ");";
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            conn.query(sql, [], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: "batch task success"
+                    })
+                );
+            });
+        });
+    },
 };
