@@ -96,6 +96,26 @@ module.exports = {
             });
         });
     },
+    batchVerify: (req, res, next) => {
+        let id = req.query.id || req.body.id || '',
+            status = req.query.status || req.body.status || 1;
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "UPDATE customer_standard SET `status` = " + status + " WHERE id IN(" + id + ");";
+
+            conn.query(sql, [], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: "batch verify standard customer success"
+                    })
+                );
+            });
+        });
+    },
     getList: (req, res, next) => {
         let storeid = req.query.storeid || req.body.storeid || 0,
             status = req.query.status || req.body.status || 0,
@@ -271,7 +291,7 @@ module.exports = {
     batchTask: (req, res, next) => {
         let id = req.query.id || req.body.id || '';
         coach = req.query.coach || req.body.coach || '',
-        sale = req.query.sale || req.body.sale || '',
+            sale = req.query.sale || req.body.sale || '',
             sql = "DELETE FROM customer WHERE id IN(";
 
         if (id == '') {

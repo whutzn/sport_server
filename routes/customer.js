@@ -37,6 +37,7 @@ router.post("/standard/add", customerWork.add);
 router.post("/standard/remove", customerWork.remove);
 router.post("/standard/verify", customerWork.verify);
 router.post("/standard/list", customerWork.getList);
+router.post("/standard/batchverify", customerWork.batchVerify);
 
 router.post("/dotask", customerWork.updateStatusAndTask);
 router.post("/tasklist", customerWork.taskList);
