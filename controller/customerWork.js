@@ -300,17 +300,22 @@ module.exports = {
             res.send({ code: 1, desc: 'no id' });
             return;
         }
-        if (coach == '') sql += id + ");";
-        else sql = "UPDATE customer SET coach = '" + coach + "' WHERE id IN(" + id + ");";
 
-        if (sale == '') sql += id + ");";
-        else sql = "UPDATE customer SET sale = '" + sale + "' WHERE id IN(" + id + ");";
+        if(coach != '') {
+            sql = "UPDATE customer SET coach = '" + coach + "' WHERE id IN(" + id + ");";
+        }else if(sale != ''){
+            sql = "UPDATE customer SET sale = '" + sale + "' WHERE id IN(" + id + ");";
+        }else sql += id + ");";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
             conn.query(sql, [], function(err, rows) {
-                if (err) return next("add result" + err);
+                if (err) {
+                    console.log(sql);
+                    console.log("batch result" + err);
+                    return next("batch result" + err);
+                }
                 res.send(
                     JSON.stringify({
                         code: 0,

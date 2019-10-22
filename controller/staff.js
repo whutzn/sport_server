@@ -88,7 +88,7 @@ let addStaff = (req, res, next) => {
             if (err) {
                 console.log("query error", err);
                 if (err.hasOwnProperty("errno") && err.errno == 1062)
-                    res.send({ code: 12, desc: "Duplicate account" });
+                    res.send({ code: 12, desc: "重复的手机号！" });
                 else res.send({ code: 11, desc: err });
                 return;
             }
