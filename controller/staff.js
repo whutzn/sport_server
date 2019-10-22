@@ -72,7 +72,7 @@ let addStaff = (req, res, next) => {
         password = req.query.password || req.body.password || "",
         name = req.query.name || req.body.name || "",
         type = req.query.type || req.body.type || "",
-        storeid = req.query.storeid || req.body.storeid || "";
+        storeid = req.query.storeid || req.body.storeid || 0;
 
     req.getConnection((err, conn) => {
         if (err) {

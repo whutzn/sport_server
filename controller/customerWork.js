@@ -196,6 +196,7 @@ module.exports = {
             pageSize = req.body.pageSize || req.query.pageSize || "",
             pageNum = req.body.pageNum || req.query.pageNum || "",
             id = req.body.id || req.query.id || 0,
+            customerid = req.query.customerid || req.body.customerid || 0,
             salename = req.body.sale || req.query.sale || "";
 
         req.getConnection(function(err, conn) {
@@ -206,6 +207,7 @@ module.exports = {
 
             if (salename != "") sql += " AND sale = '" + salename + "'";
             if (id != 0) sql += " AND id = " + id;
+            if (customerid != 0) sql += " AND customerid = " + customerid;
 
             if (pageNum != "" && pageSize != "") {
                 let start = (pageNum - 1) * pageSize;
