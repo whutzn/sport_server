@@ -1,5 +1,6 @@
 let multer = require("multer"),
     fs = require("fs"),
+    axios = require("axios"),
     storage = multer.diskStorage({
         destination: function(req, file, cb) {
             cb(null, "./public/customer");
@@ -183,7 +184,8 @@ let addCustomer = (req, res, next) => {
                     });
                 }
 
-                let arr1 = [name, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
+                let customerid = result.insertId,
+                    arr1 = [name, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
 
                     sql1 = "INSERT INTO customer_base ( `name`, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, customerid ) VALUES(?)";
 
@@ -201,6 +203,13 @@ let addCustomer = (req, res, next) => {
                                 console.log("query error", err);
                                 res.send({ code: 11, desc: err });
                                 return;
+                            });
+                        }
+                        if(coord.indexOf(",") == -1 ) {
+                            axios.post("http://localhost:3000/admin/customer/updatecoord",{
+                                customerid: customerid,
+                                address: address,
+                                city: coord
                             });
                         }
                         res.send({ code: 0, desc: 'add customer success' });
@@ -278,6 +287,7 @@ let setCustomer = (req, res, next) => {
         qq = req.query.qq || req.body.qq || '',
         phone = req.query.phone || req.body.phone || '',
         address = req.query.address || req.body.address || '',
+        coord = req.query.coord || req.body.coord || '',
         hobby = req.query.hobby || req.body.hobby || '',
         nature = req.query.nature || req.body.nature || '',
         profession = req.query.profession || req.body.profession || '',
@@ -337,6 +347,13 @@ let setCustomer = (req, res, next) => {
                                 console.log("query error", err);
                                 res.send({ code: 11, desc: err });
                                 return;
+                            });
+                        }
+                        if(coord.indexOf(",") == -1 ) {
+                            axios.post("http://localhost:3000/admin/customer/updatecoord",{
+                                customerid: customerid,
+                                address: address,
+                                city: coord
                             });
                         }
                         res.send({ code: 0, desc: 'set customer success' });
@@ -544,6 +561,39 @@ let classList = (req, res, next) => {
     });
 };
 
+let updateCoord = (req, res, next) => {
+    let customerid = req.query.customerid || req.body.customerid || 0,
+    address = req.query.address || req.body.address || '',
+    city = req.query.city || req.body.city || '';
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let address1 = encodeURI(address), city1 = encodeURI(city);
+
+        axios.get(`https://restapi.amap.com/v3/geocode/geo?key=98e2c00ba0092e491d02373ffa743ad6&address=${address1}&city=${city1}`).then((respose) => {
+            let resData = respose.data;
+            if(resData.count > 0) {
+                let sql = "UPDATE customer_base SET coord = ? WHERE customerid = ? ";
+                conn.query(sql, [resData.geocodes[0].location, customerid], function(err, rows) {
+                    if (err) {
+                        console.log("query error", err);
+                        res.send({ code: 11, desc: err });
+                        return;
+                    }
+                    res.send({ code: 0, desc: 'set customer coord success' });
+                    console.log("set customer coord success");
+                });
+            }else res.send({ code: 1, desc: 'set customer coord fail' });
+        }).catch((err) => {
+            console.log("set customer coord fail: ", err);
+        });
+    });
+};
+
 function searchFiled(sql, filed, name) {
     if (filed != "") {
         if (sql.indexOf("WHERE") >= 0) {
@@ -568,5 +618,6 @@ module.exports = {
     setclass: setClass,
     listclass: classList,
     addcustomerfile: uploadCustomerFile,
-    setstatus: setCustomerStatus
+    setstatus: setCustomerStatus,
+    updatecoord: updateCoord
 };

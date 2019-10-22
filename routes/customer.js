@@ -32,6 +32,7 @@ router.post("/addresult", customerIndex.addResult);
 router.post("/getresult", customerIndex.getResult);
 
 router.post("/getclassbycustomerid", customerIndex.getClassByCustomerid);
+router.post("/updatecoord", customerRoute.updatecoord);
 
 router.post("/standard/add", customerWork.add);
 router.post("/standard/remove", customerWork.remove);

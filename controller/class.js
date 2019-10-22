@@ -1,6 +1,5 @@
 let multer = require("multer"),
     fs = require("fs"),
-    axios = require("axios"),
     storage = multer.diskStorage({
         destination: function(req, file, cb) {
             cb(null, "./public/class");
