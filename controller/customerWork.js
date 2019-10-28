@@ -11,8 +11,10 @@ module.exports = {
                 }
 
                 let sql2 =
-                    "SELECT customer_base.`name`, customer.sale, customer.coach, customer.storeid, customer_base.gender FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.id = ?";
-                conn.query(sql2, [customerid], function(err, result1) {
+                    "SELECT customer_base.`name`, customer.sale, customer.coach, customer.storeid, customer_base.gender FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.id = " + customerid;
+
+                    sql2 += ";UPDATE customer SET isStandard = 2 WHERE id = " + customerid;
+                conn.query(sql2, [], function(err, result1) {
                     if (err) {
                         conn.rollback(function() {
                             console.log("query error", err);
@@ -27,11 +29,11 @@ module.exports = {
                     conn.query(
                         sql1, [
                             customerid,
-                            result1[0].name,
-                            result1[0].sale,
-                            result1[0].coach,
-                            result1[0].gender,
-                            result1[0].storeid
+                            result1[0][0].name,
+                            result1[0][0].sale,
+                            result1[0][0].coach,
+                            result1[0][0].gender,
+                            result1[0][0].storeid
                         ],
                         function(err, result) {
                             if (err) {
@@ -78,14 +80,18 @@ module.exports = {
     },
     verify: (req, res, next) => {
         let id = req.query.id || req.body.id || 0,
-            status = req.query.status || req.body.status || 1;
+            status = req.query.status || req.body.status || 1,
+            customerid = req.query.customerid || req.body.customerid || 0;
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql = "UPDATE customer_standard SET `status` = ? WHERE id = ?;";
+            let sql = "UPDATE customer_standard SET `status` = "+status+" WHERE id = "+id;
 
-            conn.query(sql, [status, id], function(err, rows) {
+            if(status == 2) sql += ";UPDATE customer SET isStandard = 0 WHERE id = " + customerid;
+            else if(status == 0) sql += ";UPDATE customer SET isStandard = 1 WHERE id = " + customerid;
+
+            conn.query(sql, [], function(err, rows) {
                 if (err) return next("add result" + err);
                 res.send(
                     JSON.stringify({

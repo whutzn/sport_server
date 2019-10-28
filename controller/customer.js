@@ -528,9 +528,12 @@ let removeClass = (req, res, next) => {
 let classList = (req, res, next) => {
     let storeid = req.query.storeid || req.body.storeid || 0,
         coachid = req.query.coachid || req.body.coachid || 0,
+        saleid = req.query.saleid || req.body.saleid || 0,
         customerid = req.query.customerid || req.body.customerid || 0,
         pageSize = req.body.pageSize || req.query.pageSize || "",
-        pageNum = req.body.pageNum || req.query.pageNum || "";
+        pageNum = req.body.pageNum || req.query.pageNum || "",
+        date = req.body.date || req.query.date || "",
+        status = req.body.status || req.query.status || 1;
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -538,10 +541,12 @@ let classList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = 1 AND storeid = " + storeid;
+        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = "+ status +" AND storeid = " + storeid;
 
         if (coachid != 0) sql += " AND classorder.coachid = " + coachid;
         if (customerid != 0) sql += " AND classorder.customerid = " + customerid;
+        if (saleid != 0) sql += " AND classorder.saleid = " + saleid;
+        if (date != "") sql += " AND classorder.date = '" + date + "'";
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
