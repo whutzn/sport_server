@@ -13,7 +13,7 @@ module.exports = {
                 let sql2 =
                     "SELECT customer_base.`name`, customer.sale, customer.coach, customer.storeid, customer_base.gender FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.id = " + customerid;
 
-                    sql2 += ";UPDATE customer SET isStandard = 2 WHERE id = " + customerid;
+                sql2 += ";UPDATE customer SET isStandard = 2 WHERE id = " + customerid;
                 conn.query(sql2, [], function(err, result1) {
                     if (err) {
                         conn.rollback(function() {
@@ -86,10 +86,10 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql = "UPDATE customer_standard SET `status` = "+status+" WHERE id = "+id;
+            let sql = "UPDATE customer_standard SET `status` = " + status + " WHERE id = " + id;
 
-            if(status == 2) sql += ";UPDATE customer SET isStandard = 0 WHERE id = " + customerid;
-            else if(status == 0) sql += ";UPDATE customer SET isStandard = 1 WHERE id = " + customerid;
+            if (status == 2) sql += ";UPDATE customer SET isStandard = 0 WHERE id = " + customerid;
+            else if (status == 0) sql += ";UPDATE customer SET isStandard = 1 WHERE id = " + customerid;
 
             conn.query(sql, [], function(err, rows) {
                 if (err) return next("add result" + err);
@@ -105,11 +105,14 @@ module.exports = {
     batchVerify: (req, res, next) => {
         let id = req.query.id || req.body.id || '',
             status = req.query.status || req.body.status || 1;
+        customerid = req.query.customerid || req.body.customerid || '';
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
             let sql = "UPDATE customer_standard SET `status` = " + status + " WHERE id IN(" + id + ");";
+            if (status == 2) sql += "UPDATE customer SET isStandard = 0 WHERE id IN(" + customerid + ");";
+            else if (status == 0) sql += "UPDATE customer SET isStandard = 1 WHERE id IN(" + customerid + ");";
 
             conn.query(sql, [], function(err, rows) {
                 if (err) return next("add result" + err);
@@ -307,11 +310,11 @@ module.exports = {
             return;
         }
 
-        if(coach != '') {
+        if (coach != '') {
             sql = "UPDATE customer SET coach = '" + coach + "' WHERE id IN(" + id + ");";
-        }else if(sale != ''){
+        } else if (sale != '') {
             sql = "UPDATE customer SET sale = '" + sale + "' WHERE id IN(" + id + ");";
-        }else sql += id + ");";
+        } else sql += id + ");";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);

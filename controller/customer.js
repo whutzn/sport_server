@@ -205,8 +205,8 @@ let addCustomer = (req, res, next) => {
                                 return;
                             });
                         }
-                        if(coord.indexOf(",") == -1 ) {
-                            axios.post("http://localhost:3000/admin/customer/updatecoord",{
+                        if (coord.indexOf(",") == -1) {
+                            axios.post("http://localhost:3000/admin/customer/updatecoord", {
                                 customerid: customerid,
                                 address: address,
                                 city: coord
@@ -349,8 +349,8 @@ let setCustomer = (req, res, next) => {
                                 return;
                             });
                         }
-                        if(coord.indexOf(",") == -1 ) {
-                            axios.post("http://localhost:3000/admin/customer/updatecoord",{
+                        if (coord.indexOf(",") == -1) {
+                            axios.post("http://localhost:3000/admin/customer/updatecoord", {
                                 customerid: customerid,
                                 address: address,
                                 city: coord
@@ -541,7 +541,7 @@ let classList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = "+ status +" AND storeid = " + storeid;
+        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = " + status + " AND storeid = " + storeid;
 
         if (coachid != 0) sql += " AND classorder.coachid = " + coachid;
         if (customerid != 0) sql += " AND classorder.customerid = " + customerid;
@@ -568,8 +568,8 @@ let classList = (req, res, next) => {
 
 let updateCoord = (req, res, next) => {
     let customerid = req.query.customerid || req.body.customerid || 0,
-    address = req.query.address || req.body.address || '',
-    city = req.query.city || req.body.city || '';
+        address = req.query.address || req.body.address || '',
+        city = req.query.city || req.body.city || '';
     req.getConnection(function(err, conn) {
         if (err) {
             console.log("error db link", err);
@@ -577,11 +577,12 @@ let updateCoord = (req, res, next) => {
             return;
         }
 
-        let address1 = encodeURI(address), city1 = encodeURI(city);
+        let address1 = encodeURI(address),
+            city1 = encodeURI(city);
 
         axios.get(`https://restapi.amap.com/v3/geocode/geo?key=98e2c00ba0092e491d02373ffa743ad6&address=${address1}&city=${city1}`).then((respose) => {
             let resData = respose.data;
-            if(resData.count > 0) {
+            if (resData.count > 0) {
                 let sql = "UPDATE customer_base SET coord = ? WHERE customerid = ? ";
                 conn.query(sql, [resData.geocodes[0].location, customerid], function(err, rows) {
                     if (err) {
@@ -592,7 +593,7 @@ let updateCoord = (req, res, next) => {
                     res.send({ code: 0, desc: 'set customer coord success' });
                     console.log("set customer coord success");
                 });
-            }else res.send({ code: 1, desc: 'set customer coord fail' });
+            } else res.send({ code: 1, desc: 'set customer coord fail' });
         }).catch((err) => {
             console.log("set customer coord fail: ", err);
         });
