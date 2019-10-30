@@ -212,7 +212,7 @@ let addCustomer = (req, res, next) => {
                                 city: coord
                             });
                         }
-                        res.send({ code: 0, desc: 'add customer success' });
+                        res.send({ code: 0, desc: customerid });
                     });
                 });
             });

@@ -278,7 +278,9 @@ module.exports = {
     },
     getStatistics: (req, res, next) => {
         let storeid = req.query.storeid || req.body.storeid || 0,
-            queryString = '';
+            queryString = '',
+            startTime = req.query.startTime || req.body.startTime || "",
+            endTime = req.query.endTime || req.body.endTime || "";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
