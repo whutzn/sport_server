@@ -58,7 +58,7 @@ module.exports = {
             if (err) return next(err);
 
             let sql =
-                "	UPDATE customer_index SET `index` = ? WHERE customerid = ?;";
+                "UPDATE customer_index SET `index` = ? WHERE customerid = ?;";
 
             if (mode == 0) sql = "INSERT INTO customer_index (`index`,customerid) VALUES(?,?)";
 
@@ -279,7 +279,7 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql = "UPDATE customer SET endTime = ?, time = ?, price = price + ?, memberid = ?, `status` = '在线会员' WHERE id = ?";
+            let sql = "UPDATE customer SET endTime = ?,level= '普通会员', time = ?, price = price + ?, memberid = ?, `status` = '在线会员' WHERE id = ?";
 
             conn.query(sql, [endTime, time, price, memberid, customerid], function(err, rows) {
                 if (err) return next("add result" + err);

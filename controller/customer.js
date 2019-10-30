@@ -146,6 +146,7 @@ let addCustomer = (req, res, next) => {
         profession = req.query.profession || req.body.profession || '',
         remarks = req.query.remarks || req.body.remarks || '',
         pname = req.query.pname || req.body.pname || '',
+        shape = req.query.shape || req.body.shape || '',
 
         visitsource = req.query.visitsource || req.body.visitsource || '',
         performancesource = req.query.performancesource || req.body.performancesource || '',
@@ -185,9 +186,9 @@ let addCustomer = (req, res, next) => {
                 }
 
                 let customerid = result.insertId,
-                    arr1 = [name, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, result.insertId],
+                    arr1 = [name, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, shape, result.insertId],
 
-                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, customerid ) VALUES(?)";
+                    sql1 = "INSERT INTO customer_base ( `name`, gender, birth, age, height, weight, wx, qq, phone, address, coord, hobby, nature, profession, remarks, pname, shape, customerid ) VALUES(?)";
 
                 conn.query(sql1, [arr1], function(err, result) {
                     if (err) {
@@ -292,6 +293,7 @@ let setCustomer = (req, res, next) => {
         nature = req.query.nature || req.body.nature || '',
         profession = req.query.profession || req.body.profession || '',
         remarks = req.query.remarks || req.body.remarks || '',
+        shape = req.query.shape || req.body.shape || '',
         pname = req.query.pname || req.body.pname || '',
 
         visitsource = req.query.visitsource || req.body.visitsource || '',
@@ -331,9 +333,9 @@ let setCustomer = (req, res, next) => {
                     });
                 }
 
-                let sql1 = "UPDATE customer_base SET `name` = ?, gender = ?, birth = ?,age = ?, height = ?, weight = ?, wx = ?, qq = ?, phone = ?, address = ?, hobby = ?, nature = ?, profession = ?, remarks = ?, pname = ? WHERE customerid = ?";
+                let sql1 = "UPDATE customer_base SET `name` = ?, gender = ?, birth = ?,age = ?, height = ?, weight = ?, wx = ?, qq = ?, phone = ?, address = ?, hobby = ?, nature = ?, profession = ?, remarks = ?, pname = ?, shape = ? WHERE customerid = ?";
 
-                conn.query(sql1, [name, gender, birth, age, height, weight, wx, qq, phone, address, hobby, nature, profession, remarks, pname, customerid], function(err, result) {
+                conn.query(sql1, [name, gender, birth, age, height, weight, wx, qq, phone, address, hobby, nature, profession, remarks, pname, shape, customerid], function(err, result) {
                     if (err) {
                         conn.rollback(function() {
                             console.log("query error", err);
