@@ -1,3 +1,5 @@
+let axios = require("axios");
+
 module.exports = {
     addWeight: (req, res, next) => {
         let customerid = req.query.customerid || req.body.customerid || 0,
@@ -63,7 +65,25 @@ module.exports = {
             if (mode == 0) sql = "INSERT INTO customer_index (`index`,customerid) VALUES(?,?)";
 
             conn.query(sql, [index, customerid], function(err, rows) {
-                if (err) return next("add index" + err);
+                if (err) {
+                    console.log("add index", err);
+                    return next("add index" + err);
+                }
+                let indexObj = JSON.parse(index),
+                bmiIndex = 0,
+                fatIndex = 0,
+                indexArray = indexObj.bodyTableRow;
+
+                if(indexArray.length > 0) {
+                    bmiIndex = indexArray[indexArray.length - 1][6] == '' ? 0 : parseFloat(indexArray[indexArray.length - 1][6])
+                    fatIndex = indexArray[indexArray.length - 1][3] == '' ? 0 : parseFloat(indexArray[indexArray.length - 1][3])
+
+                    axios.post("http://localhost:3000/admin/customer/uploadbmi", {
+                        customerid: customerid,
+                        bmi: bmiIndex,
+                        fat: fatIndex
+                    });
+                }
                 res.send(
                     JSON.stringify({
                         code: 0,
@@ -287,6 +307,30 @@ module.exports = {
                     JSON.stringify({
                         code: 0,
                         desc: 'buy card success'
+                    })
+                );
+            });
+        });
+    },
+    uploadBmi: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0,
+        bmi = req.query.bmi ||　req.body.bmi ||　0,
+        fat = req.query.fat || req.body.fat || 0;
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "UPDATE customer_base SET bmi = ?, fat = ? WHERE customerid = ?";
+
+            conn.query(sql, [bmi, fat, customerid], function(err, rows) {
+                if (err) {
+                    console.log("upload bmi", err);
+                    return next("upload bmi" + err);
+                }
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: 'upload bmi success'
                     })
                 );
             });

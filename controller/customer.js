@@ -543,7 +543,7 @@ let classList = (req, res, next) => {
             return;
         }
 
-        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name` FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = " + status + " AND storeid = " + storeid;
+        let sql = "SELECT SQL_CALC_FOUND_ROWS classorder.*, customer_base.`name`, customer_base.gender, customer_base.pname FROM classorder LEFT JOIN customer_base ON classorder.customerid = customer_base.customerid WHERE date > DATE_SUB(NOW(),INTERVAL 1 DAY) AND `status` = " + status + " AND storeid = " + storeid;
 
         if (coachid != 0) sql += " AND classorder.coachid = " + coachid;
         if (customerid != 0) sql += " AND classorder.customerid = " + customerid;

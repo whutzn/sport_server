@@ -11,7 +11,7 @@ module.exports = {
                 }
 
                 let sql2 =
-                    "SELECT customer_base.`name`, customer.sale, customer.coach, customer.storeid, customer_base.gender FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.id = " + customerid;
+                    "SELECT customer_base.`name`, customer.sale, customer.target, customer.coach, customer.storeid, customer_base.gender FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid WHERE customer.id = " + customerid;
 
                 sql2 += ";UPDATE customer SET isStandard = 2 WHERE id = " + customerid;
                 conn.query(sql2, [], function(err, result1) {
@@ -24,7 +24,7 @@ module.exports = {
                     }
 
                     let sql1 =
-                        "INSERT INTO customer_standard(customerid,`name`,salename,coachname,gender,storeid) VALUES (?,?,?,?,?,?)";
+                        "INSERT INTO customer_standard(customerid,`name`,salename,coachname,gender,storeid,target) VALUES (?,?,?,?,?,?)";
 
                     conn.query(
                         sql1, [
@@ -33,7 +33,8 @@ module.exports = {
                             result1[0][0].sale,
                             result1[0][0].coach,
                             result1[0][0].gender,
-                            result1[0][0].storeid
+                            result1[0][0].storeid,
+                            result1[0][0].target
                         ],
                         function(err, result) {
                             if (err) {
@@ -131,16 +132,32 @@ module.exports = {
             pageSize = req.body.pageSize || req.query.pageSize || "",
             pageNum = req.body.pageNum || req.query.pageNum || "",
             id = req.body.id || req.query.id || 0,
-            salename = req.body.salename || req.query.salename || "";
+            salename = req.body.salename || req.query.salename || "",
+            target = req.body.target || req.query.target || "",
+            bmiRange = req.query.bmi ||　req.body.bmi ||　"",
+            fatRange = req.query.fat || req.body.fat || "",
+            gender = req.query.gender || req.body.gender || "",
+            shape = req.query.shape || req.body.shape || "";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
             let sql =
-                "SELECT SQL_CALC_FOUND_ROWS * FROM customer_standard WHERE storeid = " + storeid + " AND `status` = " + status;
+                "SELECT SQL_CALC_FOUND_ROWS customer_standard.*, customer_base.pname FROM customer_standard LEFT JOIN customer_base ON customer_standard.customerid = customer_base.customerid WHERE customer_standard.storeid = " + storeid + " AND customer_standard.`status` = " + status;
 
-            if (salename != "") sql += " AND salename = '" + salename + "'";
-            if (id != 0) sql += " AND id = " + id;
+            if (salename != "") sql += " AND customer_standard.salename = '" + salename + "'";
+            if (id != 0) sql += " AND customer_standard.id = " + id;
+            if (target != "") sql += " AND customer_standard.target LIKE '%" + target + "%'";
+            if (gender != "") sql += " AND customer_standard.gender = " + gender;
+            if (shape != "") sql += " AND customer_base.shape = '" + shape + "'";
+            if (bmiRange != "") {
+                let bmiArray = bmiRange.split("-");
+                sql += ` AND customer_base.bmi > ${parseFloat(bmiArray[0])} AND customer_base.bmi <= ${parseFloat(bmiArray[1])} `;
+            }
+            if (fatRange != "") {
+                let fatArray = fatRange.split("-");
+                sql += ` AND customer_base.fat > ${parseFloat(fatArray[0])} AND customer_base.fat <= ${parseFloat(fatArray[1])} `;
+            }
 
             if (pageNum != "" && pageSize != "") {
                 let start = (pageNum - 1) * pageSize;

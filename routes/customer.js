@@ -48,6 +48,8 @@ router.post("/removetask", customerWork.removeTask);
 router.post("/statistics", customerWork.getStatistics);
 router.post("/batchtask", customerWork.batchTask);
 
+router.post("/uploadbmi", customerIndex.uploadBmi);
+
 schedule.scheduleJob("30 0 0 * * *", () => {
     console.log("taskTime:" + new Date());
     axios
