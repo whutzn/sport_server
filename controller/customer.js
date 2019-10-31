@@ -173,7 +173,7 @@ let addCustomer = (req, res, next) => {
 
         let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid, time, startTime, price, level, classStatus],
 
-            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, startTime,price,level, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, startTime,price,level, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
         conn.beginTransaction(function(err) {
             if (err) { throw err; }

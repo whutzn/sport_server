@@ -295,19 +295,28 @@ module.exports = {
     },
     getStatistics: (req, res, next) => {
         let storeid = req.query.storeid || req.body.storeid || 0,
-            queryString = '',
+            queryString = '',queryString1 = '',
             startTime = req.query.startTime || req.body.startTime || "",
             endTime = req.query.endTime || req.body.endTime || "";
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
-            if (storeid != 0) queryString = 'WHERE storeid = ' + storeid;
+            if (storeid != 0) {
+                queryString = 'WHERE storeid = ' + storeid;
+                queryString1 = 'AND storeid = ' + storeid;
+            }
             if(startTime != "" && endTime != "") {
-                if (storeid != 0) queryString = "WHERE storeid = " + storeid + "  AND NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
-                else queryString = "WHERE NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                if (storeid != 0) {
+                    queryString = "WHERE storeid = " + storeid + "  AND NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                    queryString1 = "AND storeid = " + storeid + "  AND NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                }
+                else {
+                    queryString = "WHERE NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                    queryString1 = "AND NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                }
              }
 
-            let sql = `SELECT performancesource, COUNT(performancesource) AS count FROM customer ${queryString} GROUP BY performancesource;SELECT classStatus, COUNT(classStatus) AS count FROM customer ${queryString} GROUP BY classStatus;
+            let sql = `SELECT performancesource, COUNT(performancesource) AS count FROM customer ${queryString} GROUP BY performancesource;SELECT classStatus, COUNT(classStatus) AS count FROM customer WHERE classStatus <> '跟踪客户' ${queryString1} GROUP BY classStatus;
           SELECT sale, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY sale;SELECT count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString};
           SELECT coach, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY coach;`;
 
