@@ -160,6 +160,7 @@ let addCustomer = (req, res, next) => {
         time = req.query.time || req.body.time || null,
         startTime = req.query.startTime || req.body.startTime || null,
         price = req.query.price || req.body.price || 0,
+        level = req.query.level || req.body.level || "",
         classStatus = req.query.classStatus || req.body.classStatus || '';
 
 
@@ -170,9 +171,9 @@ let addCustomer = (req, res, next) => {
             return;
         }
 
-        let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid, time, startTime, price, classStatus],
+        let arr2 = [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, storeid, time, startTime, price, level, classStatus],
 
-            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, startTime,price, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            sql2 = "INSERT INTO customer(visitsource,performancesource,target,classid,memberid,coach,sale,`status`,storeid,time, startTime,price,level, classStatus) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
         conn.beginTransaction(function(err) {
             if (err) { throw err; }
@@ -310,6 +311,7 @@ let setCustomer = (req, res, next) => {
         startTime = req.query.startTime || req.body.startTime || null,
         price = req.query.price || req.body.price || 0,
         classStatus = req.query.classStatus || req.body.classStatus || '',
+        level = req.query.level || req.body.level || "",
         customerid = req.query.customerid || req.body.customerid;
 
 
@@ -320,11 +322,11 @@ let setCustomer = (req, res, next) => {
             return;
         }
 
-        let sql2 = "UPDATE customer SET visitsource = ?, performancesource = ?, target = ?, classid = ?, memberid = ?, coach = ?, sale = ?, `status` = ?, time = ?,startTime = ?, storeid = ?, price = ?, classStatus = ? WHERE id = ?";
+        let sql2 = "UPDATE customer SET visitsource = ?, performancesource = ?, target = ?, classid = ?, memberid = ?, coach = ?, sale = ?, `status` = ?, time = ?,startTime = ?, storeid = ?, price = ?, classStatus = ?, level = ? WHERE id = ?";
 
         conn.beginTransaction(function(err) {
             if (err) { throw err; }
-            conn.query(sql2, [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, time, startTime, storeid, price, classStatus, customerid], function(err, result) {
+            conn.query(sql2, [visitsource, performancesource, target, classid, memberid, coachid, saleid, status, time, startTime, storeid, price, classStatus, level, customerid], function(err, result) {
                 if (err) {
                     conn.rollback(function() {
                         console.log("query error", err);

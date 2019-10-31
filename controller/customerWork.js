@@ -302,6 +302,10 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
             if (storeid != 0) queryString = 'WHERE storeid = ' + storeid;
+            if(startTime != "" && endTime != "") {
+                if (storeid != 0) queryString = "WHERE storeid = " + storeid + "  AND NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+                else queryString = "WHERE NOT ((endTime < '"+ startTime +"') OR (time > '"+ endTime +"' ))";
+             }
 
             let sql = `SELECT performancesource, COUNT(performancesource) AS count FROM customer ${queryString} GROUP BY performancesource;SELECT classStatus, COUNT(classStatus) AS count FROM customer ${queryString} GROUP BY classStatus;
           SELECT sale, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY sale;SELECT count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString};
