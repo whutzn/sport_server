@@ -378,7 +378,8 @@ let customerList = (req, res, next) => {
         classStatus = req.query.classStatus || req.body.classStatus || '',
         status = req.query.status || req.body.status || "",
         name = req.query.name || 　req.body.name || '',
-        customerid = req.query.customerid || req.body.customerid || '';
+        customerid = req.query.customerid || req.body.customerid || '',
+        keyWord = req.query.keyWord || req.body.keyWord || '';
 
     req.getConnection(function(err, conn) {
         if (err) {
@@ -398,6 +399,14 @@ let customerList = (req, res, next) => {
         sql = searchFiled(sql, name, 'name');
         sql = searchFiled(sql, level, 'level');
         sql = searchFiled(sql, customerid, 'customerid');
+
+        if (keyWord != "") {
+            if (sql.indexOf("WHERE") >= 0) {
+                sql += " AND CONCAT(`name`,memberid,phone) LIKE '%" + keyWord + "%'";
+            } else {
+                sql += "WHERE CONCAT(`name`,memberid,phone) LIKE '%" + keyWord + "%'";
+            }
+        }
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
