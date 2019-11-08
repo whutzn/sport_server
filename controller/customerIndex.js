@@ -70,11 +70,11 @@ module.exports = {
                     return next("add index" + err);
                 }
                 let indexObj = JSON.parse(index),
-                bmiIndex = 0,
-                fatIndex = 0,
-                indexArray = indexObj.bodyTableRow;
+                    bmiIndex = 0,
+                    fatIndex = 0,
+                    indexArray = indexObj.bodyTableRow;
 
-                if(indexArray.length > 0) {
+                if (indexArray.length > 0) {
                     bmiIndex = indexArray[indexArray.length - 1][6] == '' ? 0 : parseFloat(indexArray[indexArray.length - 1][6])
                     fatIndex = indexArray[indexArray.length - 1][3] == '' ? 0 : parseFloat(indexArray[indexArray.length - 1][3])
 
@@ -270,6 +270,27 @@ module.exports = {
             });
         });
     },
+    setClassByCustomerid: (req, res, next) => {
+        let customerid = req.query.customerid || req.body.customerid || 0,
+            classid = req.query.classid || req.body.classid || '';
+
+        req.getConnection(function(err, conn) {
+            if (err) return next(err);
+
+            let sql = "UPDATE customer SET classid = ? WHERE id = ?";
+
+
+            conn.query(sql, [classid, customerid], function(err, rows) {
+                if (err) return next("add result" + err);
+                res.send(
+                    JSON.stringify({
+                        code: 0,
+                        desc: 'set class success'
+                    })
+                );
+            });
+        });
+    },
     stopClass: (req, res, next) => {
         let customerid = req.query.customerid || req.body.customerid || 0;
         req.getConnection(function(err, conn) {
@@ -314,8 +335,8 @@ module.exports = {
     },
     uploadBmi: (req, res, next) => {
         let customerid = req.query.customerid || req.body.customerid || 0,
-        bmi = req.query.bmi ||　req.body.bmi ||　0,
-        fat = req.query.fat || req.body.fat || 0;
+            bmi = req.query.bmi || 　req.body.bmi || 　0,
+            fat = req.query.fat || req.body.fat || 0;
 
         req.getConnection(function(err, conn) {
             if (err) return next(err);
