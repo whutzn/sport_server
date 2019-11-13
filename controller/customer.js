@@ -430,6 +430,68 @@ let customerList = (req, res, next) => {
     });
 };
 
+let customerSimpleList = (req, res, next) => {
+    let storeid = req.query.storeid || 　req.body.storeid || 0,
+        pageSize = req.body.pageSize || req.query.pageSize || "",
+        pageNum = req.body.pageNum || req.query.pageNum || "",
+        sale = req.body.sale || req.query.sale || "",
+        coach = req.query.coach || req.body.coach || "",
+        level = req.query.level || req.body.level || "",
+        classStatus = req.query.classStatus || req.body.classStatus || '',
+        status = req.query.status || req.body.status || "",
+        name = req.query.name || 　req.body.name || '',
+        customerid = req.query.customerid || req.body.customerid || '',
+        keyWord = req.query.keyWord || req.body.keyWord || '';
+
+    req.getConnection(function(err, conn) {
+        if (err) {
+            console.log("error db link", err);
+            res.send({ code: 10, desc: err });
+            return;
+        }
+
+        let sql = "SELECT SQL_CALC_FOUND_ROWS customer.memberid,customer.sale,customer.coach,customer.`status`,customer.`level`,customer.classStatus, customer_base.* FROM customer LEFT JOIN customer_base ON customer.id = customer_base.customerid ";
+
+        if (storeid != 0) sql += "WHERE customer.storeid = " + storeid;
+
+        sql = searchFiled(sql, sale, 'sale');
+        sql = searchFiled(sql, coach, 'coach');
+        sql = searchFiled(sql, classStatus, 'classStatus');
+        sql = searchFiled(sql, status, 'status');
+        sql = searchFiled(sql, name, 'name');
+        sql = searchFiled(sql, level, 'level');
+        sql = searchFiled(sql, customerid, 'customerid');
+
+        if (keyWord != "") {
+            if (sql.indexOf("WHERE") >= 0) {
+                sql += " AND CONCAT(`name`,memberid,phone) LIKE '%" + keyWord + "%'";
+            } else {
+                sql += "WHERE CONCAT(`name`,memberid,phone) LIKE '%" + keyWord + "%'";
+            }
+        }
+
+        if (pageNum != "" && pageSize != "") {
+            let start = (pageNum - 1) * pageSize;
+            sql += " LIMIT " + start + "," + pageSize;
+        }
+
+        sql += ";SELECT FOUND_ROWS() AS total;";
+
+        conn.query(sql, [], function(err, rows) {
+            if (err) {
+                console.log("query error", err);
+                res.send({ code: 11, desc: err });
+                return;
+            }
+            rows[0].forEach(element => {
+                element.gender = element.gender == 1 ? '男' : '女';
+                element.pname = "http://121.41.28.144:3000/customer/" + element.pname;
+            });
+            res.send({ code: 0, desc: rows });
+        });
+    });
+};
+
 let remove = (req, res, next) => {
     let id = req.query.id || req.body.id || 0;
     req.getConnection(function(err, conn) {
@@ -630,6 +692,7 @@ module.exports = {
     typelist: typeList,
     addcustomer: addCustomer,
     listcustomer: customerList,
+    simplelist: customerSimpleList,
     removecustomer: remove,
     setcustomer: setCustomer,
     addclass: addClass,

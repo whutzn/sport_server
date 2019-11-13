@@ -275,13 +275,19 @@ module.exports = {
             classid = req.query.classid || req.body.classid || '';
 
         req.getConnection(function(err, conn) {
-            if (err) return next(err);
+            if (err) {
+                console.log('set classid error', err);
+                return next(err);
+            }
 
             let sql = "UPDATE customer SET classid = ? WHERE id = ?";
 
 
             conn.query(sql, [classid, customerid], function(err, rows) {
-                if (err) return next("add result" + err);
+                if (err) {
+                    console.log('set classid result', err);
+                    return next("add result" + err);
+                }
                 res.send(
                     JSON.stringify({
                         code: 0,
