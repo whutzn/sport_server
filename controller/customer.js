@@ -623,7 +623,7 @@ let classList = (req, res, next) => {
         if (saleid != 0) sql += " AND classorder.saleid = " + saleid;
         if (date != "") sql += " AND classorder.date = '" + date + "'";
 
-        sql += " ORDER BY date";
+        sql += " ORDER BY CONCAT(date,time)";
 
         if (pageNum != "" && pageSize != "") {
             let start = (pageNum - 1) * pageSize;
