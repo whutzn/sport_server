@@ -318,7 +318,7 @@ module.exports = {
 
             let sql = `SELECT performancesource, COUNT(performancesource) AS count FROM customer ${queryString} GROUP BY performancesource;SELECT classStatus, COUNT(classStatus) AS count FROM customer WHERE classStatus <> '跟踪客户' ${queryString1} GROUP BY classStatus;
           SELECT sale, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY sale;SELECT count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString};
-          SELECT coach, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY coach;`;
+          SELECT coach, count(case when classStatus ='已续费' then 1 end) as 续课会员, count(case when classStatus<>'跟踪客户' then 1 end) as 所有会员 FROM customer ${queryString} GROUP BY coach;SELECT visitsource, COUNT(visitsource) AS count FROM customer ${queryString} GROUP BY visitsource;`;
 
             conn.query(sql, [], function(err, rows) {
                 if (err) return next("add result" + err);

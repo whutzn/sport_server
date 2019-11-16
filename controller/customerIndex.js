@@ -1,4 +1,5 @@
 let axios = require("axios");
+let mysql = require("mysql");
 
 module.exports = {
     addWeight: (req, res, next) => {
@@ -9,17 +10,22 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql =
-                "INSERT INTO customer_weight(customerid,weight,date) VALUES(?,?,?);";
+            let sql1 = "SELECT * FROM customer_weight WHERE customerid = ? AND date = ? ;",
+                sql = '';
 
-            conn.query(sql, [customerid, weight, date], function(err, rows) {
+            conn.query(sql1, [customerid, date], function(err, rows) {
                 if (err) return next("add weight" + err);
-                res.send(
-                    JSON.stringify({
-                        code: 0,
-                        desc: "add weight success"
-                    })
-                );
+                if (rows.length == 0) sql = "INSERT INTO customer_weight(weight,customerid,date) VALUES(?,?,?);";
+                else sql = "UPDATE customer_weight SET weight = ? WHERE customerid = ? AND date = ?;";
+                conn.query(sql, [weight, customerid, date], function(err, rows1) {
+                    if (err) return next("add weight" + err);
+                    res.send(
+                        JSON.stringify({
+                            code: 0,
+                            desc: "add weight success"
+                        })
+                    );
+                });
             });
         });
     },
@@ -38,7 +44,7 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql = "SELECT * FROM customer_weight WHERE customerid = ?";
+            let sql = "SELECT * FROM customer_weight WHERE customerid = ? ORDER BY date";
 
             conn.query(sql, [customerid], function(err, rows) {
                 if (err) return next("get weight" + err);
@@ -226,7 +232,7 @@ module.exports = {
                     }
 
                     let sql1 = "UPDATE classorder SET `status` = 0 WHERE id = " + id;
-                    sql1 += ";UPDATE customer SET classid = '" + JSON.stringify(classList) + "' WHERE id = " + result1[0].customerid;
+                    sql1 += ";UPDATE customer SET classid = " + mysql.escape(JSON.stringify(classList)) + " WHERE id = " + result1[0].customerid;
 
                     conn.query(sql1, [], function(err, result) {
                         if (err) {
