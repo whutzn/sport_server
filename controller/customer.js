@@ -250,7 +250,7 @@ let setCustomerStatus = (req, res, next) => {
                     });
                 }
 
-                let sql1 = "UPDATE customer SET `status` = ?,classStatus = ?, classid = ?,level = ?, endTime = ?, price = price + ? WHERE id = ?";
+                let sql1 = "UPDATE customer SET `status` = ?,classStatus = ?, classid = ?,level = ?, endTime = ?, price = ? WHERE id = ?";
                 if (price > result1[0].vip) level = "vip会员";
 
                 conn.query(sql1, ['在线会员', '已续费', classid, level, endTime, price, customerid], function(err, result) {
