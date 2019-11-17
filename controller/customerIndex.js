@@ -332,16 +332,37 @@ module.exports = {
         req.getConnection(function(err, conn) {
             if (err) return next(err);
 
-            let sql = "UPDATE customer SET endTime = ?,level= '普通会员', time = ?, price = price + ?, memberid = ?, `status` = '在线会员' WHERE id = ?";
+            let sql = "UPDATE customer SET endTime = ?,level= '普通会员', time = ?, price = ?, memberid = ?, `status` = '在线会员' WHERE id = ?";
 
             conn.query(sql, [endTime, time, price, memberid, customerid], function(err, rows) {
                 if (err) return next("add result" + err);
-                res.send(
-                    JSON.stringify({
-                        code: 0,
-                        desc: 'buy card success'
-                    })
-                );
+                let sql1 = "SELECT storeid FROM customer WHERE id = ?";
+                conn.query(sql1, [customerid], function(err, rows1) {
+                    if (err) return next("add result" + err);
+                    let sql2 = "SELECT * FROM setting WHERE storeid = ?";
+                    conn.query(sql2, [rows1[0].storeid], function(err, rows2) {
+                        if (err) return next("add result" + err);
+                        if (price > rows2[0].vip) {
+                            let level = "vip会员",
+                                sql3 = "UPDATE customer SET `level` = ? WHERE id = ?";
+                            conn.query(sql3, [level, customerid], function(err, rows3) {
+                                if (err) return next("add result" + err);
+                                res.send(
+                                    JSON.stringify({
+                                        code: 0,
+                                        desc: 'buy card success'
+                                    })
+                                );
+                            });
+                        } else res.send(
+                            JSON.stringify({
+                                code: 0,
+                                desc: 'buy card success'
+                            })
+                        );
+                    });
+
+                });
             });
         });
     },
