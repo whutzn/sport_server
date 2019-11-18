@@ -146,7 +146,7 @@ function removeStore(req, res, next) {
                             });
                             return next("query error" + err);
                         } else {
-                            axios.post("http://localhost:3000/admin/setting/add", {
+                            axios.post("http://localhost:3000/admin/setting/remove", {
                                 storeid: id
                             }).then((respose) => {
                                 res.send({

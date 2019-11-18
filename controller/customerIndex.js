@@ -222,7 +222,7 @@ module.exports = {
                     }
 
                     let curClass = JSON.parse(result1[0].class1),
-                        classList = JSON.parse(result1[0].class2);
+                        classList = JSON.parse(result1[0].class2.replace(/[\r\n\s+]/g, ''));
 
                     for (let index = 0; index < classList.length; index++) {
                         if (classList[index].id == curClass.id) {
