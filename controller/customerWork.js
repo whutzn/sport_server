@@ -168,6 +168,9 @@ module.exports = {
 
             conn.query(sql, [], function(err, rows) {
                 if (err) return next("add result" + err);
+                rows[0].forEach(element => {
+                    element.pname = "http://121.41.28.144:3000/customer/" + element.pname;
+                });
                 res.send(
                     JSON.stringify({
                         code: 0,

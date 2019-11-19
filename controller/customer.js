@@ -638,6 +638,9 @@ let classList = (req, res, next) => {
                 res.send({ code: 11, desc: err });
                 return;
             }
+            rows[0].forEach(element => {
+                element.pname = "http://121.41.28.144:3000/customer/" + element.pname;
+            });
             res.send({ code: 0, desc: rows });
         });
     });
