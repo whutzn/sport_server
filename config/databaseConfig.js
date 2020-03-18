@@ -1,9 +1,9 @@
 function getDbConfig() {
     return {
-        host: 'kingsport.top',
+        host: '*******',
         port: 3306,
         user: 'gisdb',
-        password: 'qq123456',
+        password: '*******',
         database: 'sportdb',
         multipleStatements: true
     }
